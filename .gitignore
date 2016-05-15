@@ -1,0 +1,8 @@
+.DS_Store
+npm-debug.log
+node_modules/
+lib/
+npm-debug.log/
+assets/*.js
+languages/*.mo
+.sass-cache

@@ -1,17 +1,15 @@
-# oembed-gist
+# Embed Travis CI
 
-[![Build Status](https://travis-ci.org/miya0001/oembed-gist.svg)](https://travis-ci.org/miya0001/oembed-gist)
-[![](https://img.shields.io/wordpress/plugin/dt/oembed-gist.svg)](https://wordpress.org/plugins/oembed-gist/)
-[![](https://img.shields.io/wordpress/v/oembed-gist.svg)](https://wordpress.org/plugins/oembed-gist/)
-[![](https://img.shields.io/wordpress/plugin/r/oembed-gist.svg)](https://wordpress.org/plugins/oembed-gist/)
+[![Build Status](https://travis-ci.org/miya0001/embed-travis-ci.svg)](https://travis-ci.org/miya0001/embed-travis-ci)
+[![](https://img.shields.io/wordpress/v/embed-travis-ci.svg)](https://wordpress.org/plugins/embed-travis-ci/)
 
-* https://wordpress.org/plugins/oembed-gist/
+* https://wordpress.org/plugins/embed-travis-ci/
 
 ## Contributing
 
 ```
-$ git clone https://github.com/miya0001/oembed-gist
-$ cd oembed-gist
+$ git clone https://github.com/miya0001/embed-travis-ci
+$ cd embed-travis-ci
 $ bash bin/install-wp-tests.sh wordpress_test root '' localhost $WP_VERSION
 $ phpunit
 ```

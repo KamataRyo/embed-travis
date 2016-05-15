@@ -1,11 +1,11 @@
 <?php
 /*
-Plugin Name: oEmbed Gist
-Plugin URI: https://github.com/miya0001/oembed-gist
-Description: Embed source from gist.github.
-Author: Takayuki Miyauchi
-Version: 2.0.4
-Author URI: http://firegoby.jp/
+Plugin Name: Embed Travis CI
+Plugin URI: https://github.com/KamataRyo/embed-travis-ci
+Description: Embed your build logs from Travis CI into WordPress easily.
+Author: Kamata Ryo
+Version: 0.0.0
+Author URI: http://biwako.io/
 */
 
 $oe_gist = new gist();
@@ -130,7 +130,7 @@ class gist {
 		}
 
 		$noscript = sprintf(
-			__( 'View the code on <a href="%s">Gist</a>.', 'oembed-gist' ),
+			__( 'View the code on <a href="%s">Gist</a>.', 'oembed-gist', 'inherit-theme-mods', 'embed-travis-ci' ),
 			esc_url( $url )
 		);
 

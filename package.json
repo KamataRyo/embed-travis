@@ -1,0 +1,37 @@
+{
+  "name": "embed-travis-ci",
+  "version": "0.0.0",
+  "description": "",
+  "keywords": [
+    "url",
+    "link",
+    "oembed",
+    "visual editor",
+    "post",
+    "Travis CI",
+    "plugin",
+    "WordPress"
+  ],
+  "bugs": "https://github.com/KamataRyo/embed-travis-ci/issues",
+  "license": "GPL-2.0",
+  "author": "KamataRyo",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/KamataRyo/embed-travis-ci"
+  },
+  "scripts": {
+    "build": "./node_modules/gulp/bin/gulp.js build",
+    "install": "./node_modules/bower/bin/bower install; npm run build",
+    "generatePot": "grunt i18n",
+    "test": "ls ./assets/*.js; ls ./lib; ls ./languages/*.mo"
+  },
+  "devDependencies": {
+    "grunt": "^0.4.5",
+    "grunt-wp-i18n": "^0.5.0",
+    "gulp": "^3.9.1",
+    "gulp-coffee": "^2.3.2",
+    "gulp-gettext": "^0.3.0",
+    "gulp-notify": "^2.2.0",
+    "gulp-plumber": "^1.1.0"
+  }
+}
