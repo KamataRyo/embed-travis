@@ -1,48 +1,40 @@
 sudo: false
-
 language: php
-
 notifications:
   email:
     on_success: never
     on_failure: change
-
 branches:
   only:
-    - master
-    - /^v?[0-9](\.[0-9])*/
-
+  - master
+  - "/^v?[0-9](\\.[0-9])*/"
 php:
-  - 5.3
-  - 5.6
-
+- 5.3
+- 5.6
 before_script:
-  - bash bin/install-wp-tests.sh wordpress_test root '' localhost $WP_VERSION
-  - npm cache clean
-  - npm install -g  npm-install-retry
-  - npm-install-retry --wait 500 --attempts 10
-  - gem install compass
-
+- bash bin/install-wp-tests.sh wordpress_test root '' localhost $WP_VERSION
+- npm cache clean
+- npm install -g  npm-install-retry
+- npm-install-retry --wait 500 --attempts 10
+- gem install compass
 script:
-  - npm test
-  - phpunit
-
+- npm test
+- phpunit
 after_success:
-  - npm run generatePot
-  - bash bin/deploy.sh
-
+- npm run generatePot
+- bash bin/deploy.sh
 env:
   matrix:
-    - WP_VERSION=latest WP_MULTISITE=0
-    - WP_VERSION=3.9 WP_MULTISITE=0
-
+  - WP_VERSION=latest WP_MULTISITE=0
+  - WP_VERSION=3.9 WP_MULTISITE=0
   global:
-    - WP_VERSION_TO_DEPLOY: latest
-    - PHP_VERSION_TO_DEPLOY: 5.6
-    - WP_MULTISITE_TO_DEPLOY: 0
-    - GH_REF: github.com/KamataRyo/inherit-theme-mods.git
+  - WP_VERSION_TO_DEPLOY: latest
+  - PHP_VERSION_TO_DEPLOY: 5.6
+  - WP_MULTISITE_TO_DEPLOY: 0
+  - GH_REF: github.com/KamataRyo/inherit-theme-mods.git
+  - secure: M32L2U34Kz12aTCe6bsLgbp230PF1j47ASlOIW88fRAgqdd01cndw9l0zgolFHxrRtzz/lgTfNyF7pk/smOZ1mAKZfBmo7Gk/OUhKLF705uHOZxLkuru2EW8RJAucFmDrSVyWVB/SbpCdtbrVYOvgAPlh4Cj6Wyk02UkMRoc+VhD/0XxpQv3i4Y6RNW9Weah8nYnrn+VEEOkzbMt0Pp8jwSjapx6TKWjNeAnJaH0UeWrOHYfEzpb/MJ0j2NBxDcC1T6inpYD1iyNuELtzcTBJi2Gh6LWaASBoI2qBdAw/kYj1P2CcfF57mDL45Gix49Kp30dnxaIe8fgYJ9MbG4NYtcp+VVhZCWlEHhZGtPAhtIGWpvTj7+ElidO10E/VYFiY6kwiJExQ8mDP6rwsGFTpbToTurkivxdz7ptAH70J1RkjqqkJhlBUpCNqzqTDhDqs92WsavR6R22W9G/rs3s5eu54Aad+XuRseCzLLeu7pM/ipZPS1z+fforCRTNqtOSFOYJi5JRRLJEbJqRl//etiRd11+DrF8fGq4Zics4NtwwmbPuMSJD4W16IS21wEaNhl5ifCIsNvjCz+nTD46uLbAdj7tW5vy+ShCn/ZiA/HyPjq7kZL1fMWS4QzVW3fN42NT1qlPM5rzaEy5qQQcu3H1qTl8O2roikkw9DSdQwCQ=
 
 matrix:
   include:
-    - php: 5.6
-      env: WP_VERSION=latest WP_MULTISITE=1
+  - php: 5.6
+    env: WP_VERSION=latest WP_MULTISITE=1
