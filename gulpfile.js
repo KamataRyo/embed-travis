@@ -2,7 +2,7 @@ var gulp    = require('gulp');
 var coffee  = require('gulp-coffee');
 var plumber = require('gulp-plumber');
 var notify  = require('gulp-notify');
-var compass = require('gulp-compass');
+var sass    = require('gulp-sass');
 var gettext = require('gulp-gettext');
 
 gulp.task('coffee', function(){
@@ -15,7 +15,7 @@ gulp.task('coffee', function(){
 gulp.task('sass', function(){
     gulp.src('./css/*.scss')
         // .pipe(plumber({errorHandler: notify.onError('<%= error.message %>')}))
-        .pipe(compass({
+        .pipe(sass({
             config_file: './config.rb',
             css: 'css',
             sass: 'css'

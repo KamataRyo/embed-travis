@@ -3,6 +3,7 @@ npm-debug.log
 node_modules/
 lib/
 npm-debug.log/
-assets/*.js
+js/*.js
+css/*.css
 languages/*.mo
 .sass-cache
