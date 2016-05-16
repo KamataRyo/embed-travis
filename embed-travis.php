@@ -3,7 +3,7 @@
 Plugin Name: Embed Travis
 Plugin URI: https://github.com/KamataRyo/embed-travis
 Description: Embed your build logs from Travis CI into WordPress easily.
-Author: Kamata Ryo
+Author: KamataRyo
 Version: 0.0.0
 Author URI: http://biwako.io/
 */
@@ -22,51 +22,40 @@ class Travis {
 	}
 
 	public function plugins_loaded() {
+		add_action( 'wp_enqueue_scripts', array( $this, 'enquene_script' ) );
 		add_action( 'wp_head', array( $this, 'wp_head' ) );
 
 		load_plugin_textdomain(
 			'embed-travis',
 			false,
-			dirname( plugin_basename( __FILE__ ) ).'/languages'
-		 );
+			dirname( plugin_basename( __FILE__ ) ) . '/languages'
+		);
 
 		wp_embed_register_handler(
 			'embed-travis',
 			$this->get_travis_url_regex(),
 			array( $this, 'handler' )
-		 );
+		);
 
 		add_shortcode( $this->get_shortcode_tag(), array( $this, 'shortcode' ) );
+	}
 
+
+	public function enquene_script() {
+		wp_register_script(
+			'embed-travis-script',
+			dirname( plugin_basename( __FILE__ ) ) . '/js/embed-travis.js',
+			array( 'jquery' ),
+			'',
+			true
+		);
+		wp_enqueue_script( 'embed-travis-script' );
 	}
 
 	public function wp_head() {
 		?>
 		<style>
-		.gist table {
-			margin-bottom: 0 !important;
-		}
-		.gist .line-numbers
-		{
-			width: 4em !important;
-		}
-		.gist .line,
-		.gist .line-number
-		{
-			font-size: 12px !important;
-			height: 18px !important;
-			line-height: 18px !important;
-		}
-		.gist .line
-		{
-			white-space: pre !important;
-			width: auto !important;
-			word-wrap: normal !important;
-		}
-		.gist .line span
-		{
-			word-wrap: normal !important;
-		}
+			.embed-travis {}
 		</style>
 		<?php
 	}
