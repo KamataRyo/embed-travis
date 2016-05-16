@@ -110,11 +110,15 @@ class Travis {
 		// required
 		if ( isset( $p['name'] ) && $p['name'] ) {
 			$name = $p['name'];
+		} else {
+			return is_feed() ? '' : self::get_embed_failure();
 		}
 
 		// required
 		if ( isset( $p['repo'] ) && $p['repo'] ) {
 			$repo = $p['repo'];
+		} else {
+			return is_feed() ? '' : self::get_embed_failure();
 		}
 
 		// One of two are required
@@ -124,6 +128,21 @@ class Travis {
 		} elseif ( isset( $p['jobs'] ) && $p['jobs'] ) {
 			$type = 'jobs';
 			$id = $p['jobs'];
+		} else {
+			return is_feed() ? '' : self::get_embed_failure();
+		}
+		if ( ! self::is_positive_int( $id ) ) {
+			return is_feed() ? '' : self::get_embed_failure();
+		}
+
+		// optional
+		if ( isset( $p['line'] ) && $p['line'] ) {
+			$line = $p['line'];
+			if ( ! self::is_positive_int( $line ) ) {
+				return is_feed() ? '' : self::get_embed_failure();
+			}
+		} else {
+			$line_option = '';
 		}
 
 		$url = implode(
@@ -149,7 +168,7 @@ class Travis {
 			$line_option = '';
 		}
 
-		$noscript = $this::get_noscript( $url );
+		$noscript = Travis::get_noscript( $url );
 
 		return is_feed() ? $noscript : "<div id=\"$html_id\" class=\"embed-travis\" data-name=\"$name\" data-repo=\"$repo\" data-$type=\"$id\"$line_option><noscript>$noscript</noscript></div>";
 	}
@@ -159,6 +178,22 @@ class Travis {
 			__( 'View the build log on <a href="%s">Travis CI</a>.', 'embed-travis' ),
 			esc_url( $url )
 		);
+	}
+
+	private static function is_positive_int( $arg ) {
+		if (! is_numeric( $arg ) ) {
+			return false;
+		} elseif ( 0 !== $arg - (int)$arg ) {
+			return false;
+		} elseif ( 1 > $arg ) {
+			return false;
+		} {
+			return true;
+		}
+	}
+
+	public static function get_embed_failure() {
+		return '<div class="embed-travis-invalid"></div>';
 	}
 
 	public function get_travis_url_regex() {
