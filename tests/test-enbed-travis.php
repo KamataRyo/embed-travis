@@ -1,6 +1,6 @@
 <?php
 
-class oEmbedGist_Test extends WP_UnitTestCase
+class EmbedTravis_Test extends WP_UnitTestCase
 {
 	/**
 	 * Add post and post to be set current.
@@ -25,24 +25,10 @@ class oEmbedGist_Test extends WP_UnitTestCase
 	 */
 	public function shortcode_test()
 	{
-		$this->assertSame(
-			'<div class="oembed-gist"><script src="https://gist.github.com/2759039.js"></script><noscript>View the code on <a href="https://gist.github.com/2759039">Gist</a>.</noscript></div>',
-			do_shortcode( '[gist id="2759039"]' )
-		);
-
-		$this->assertSame(
-			'<div class="oembed-gist"><script src="https://gist.github.com/2759039.js?file=2.php"></script><noscript>View the code on <a href="https://gist.github.com/2759039">Gist</a>.</noscript></div>',
-			do_shortcode( '[gist id="2759039" file="2.php"]' )
-		);
-
-		$this->assertSame(
-			'<div class="oembed-gist"><script src="https://gist.github.com/cabf03ef768ba7f9ba7d.js"></script><noscript>View the code on <a href="https://gist.github.com/cabf03ef768ba7f9ba7d">Gist</a>.</noscript></div>',
-			do_shortcode( '[gist id="cabf03ef768ba7f9ba7d"]' )
-		);
-
-		$this->assertSame(
-			'<div class="oembed-gist"><script src="https://gist.github.com/cabf03ef768ba7f9ba7d.js?file=setuser.sh"></script><noscript>View the code on <a href="https://gist.github.com/cabf03ef768ba7f9ba7d">Gist</a>.</noscript></div>',
-			do_shortcode( '[gist id="cabf03ef768ba7f9ba7d" file="setuser.sh"]' )
+		// travis build log of single job
+		$this->assertRegExp(
+			'/^(<div id="build126275217" class="embed-travis"><table>).*(<\/table><\/div>)$/',
+			do_shortcode( '[travis build_id="126275217"]' )
 		);
 	}
 
