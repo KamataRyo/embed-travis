@@ -9,7 +9,7 @@ module.exports = function( grunt ) {
 
 		addtextdomain: {
 			options: {
-				textdomain: 'embed-travis-ci',
+				textdomain: 'embed-travis',
 			},
 			target: {
 				files: {
@@ -30,8 +30,8 @@ module.exports = function( grunt ) {
 			target: {
 				options: {
 					domainPath: '/languages',
-					mainFile: 'embed-travis-ci.php',
-					potFilename: 'embed-travis-ci.pot',
+					mainFile: 'embed-travis.php',
+					potFilename: 'embed-travis.pot',
 					potHeaders: {
 						poedit: true,
 						'x-poedit-keywordslist': true

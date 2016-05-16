@@ -14,7 +14,7 @@ gulp.task('coffee', function(){
 
 gulp.task('sass', function(){
     gulp.src('./css/*.scss')
-        // .pipe(plumber({errorHandler: notify.onError('<%= error.message %>')}))
+        .pipe(plumber({errorHandler: notify.onError('<%= error.message %>')}))
         .pipe(sass({
             config_file: './config.rb',
             css: 'css',

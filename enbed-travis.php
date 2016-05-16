@@ -1,7 +1,7 @@
 <?php
 /*
-Plugin Name: Embed Travis CI
-Plugin URI: https://github.com/KamataRyo/embed-travis-ci
+Plugin Name: Embed Travis
+Plugin URI: https://github.com/KamataRyo/embed-travis
 Description: Embed your build logs from Travis CI into WordPress easily.
 Author: Kamata Ryo
 Version: 0.0.0
@@ -130,7 +130,7 @@ class gist {
 		}
 
 		$noscript = sprintf(
-			__( 'View the code on <a href="%s">Gist</a>.', 'oembed-gist', 'inherit-theme-mods', 'embed-travis-ci' ),
+			__( 'View the code on <a href="%s">Gist</a>.', 'embed-travis' ),
 			esc_url( $url )
 		);
 

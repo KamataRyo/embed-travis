@@ -1,4 +1,4 @@
-=== Embed Travis CI ===
+=== Embed Travis ===
 Contributors: kamataryo
 Tags: url, link, oembed, visual editor, post, Travis CI
 Requires at least: 3.9
@@ -23,8 +23,8 @@ You can embed your build history from Travis CI by simply pasting the URL like b
 
 = Support =
 
-* [GitHub](https://github.com/KamataRyo/embed-travis-ci)
-* [Support](https://wordpress.org/support/plugin/embed-travis-ci)
+* [GitHub](https://github.com/KamataRyo/embed-travis)
+* [Support](https://wordpress.org/support/plugin/embed-travis)
 
 == Installation ==
 
