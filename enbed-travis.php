@@ -8,76 +8,39 @@ Version: 0.0.0
 Author URI: http://biwako.io/
 */
 
-$oe_gist = new gist();
-$oe_gist->register();
+$e_travis = new Travis();
+$e_travis->register();
 
-class gist {
+class Travis {
 
-	private $shotcode_tag = 'gist';
-	private $noscript;
-	private $regex = '#(https://gist.github.com/([^\/]+\/)?([a-zA-Z0-9]+)(\/[a-zA-Z0-9]+)?)(\#file(\-|_)(.+))?$#i';
+	private $shotcode_tag = 'travis';
+	private $regex = '/^https:\/\/travis-ci\.org\/([a-zA-Z-_0-9]+)\/([a-zA-Z-_0-9]+)\/((builds)|(jobs))\/[1-9][0-9]*(#L[1-9][0-9]*)?$/';
+	const TRAVIS_URL_PREFIX = 'https://travis-ci.org';
 
-	function register()
-	{
+	function register() {
 		add_action( 'plugins_loaded', array( $this, 'plugins_loaded' ) );
 	}
 
-	public function plugins_loaded()
-	{
+	public function plugins_loaded() {
 		add_action( 'wp_head', array( $this, 'wp_head' ) );
 
 		load_plugin_textdomain(
-			'oembed-gist',
+			'embed-travis',
 			false,
 			dirname( plugin_basename( __FILE__ ) ).'/languages'
 		 );
 
 		wp_embed_register_handler(
-			'oe-gist',
-			$this->get_gist_regex(),
+			'embed-travis',
+			$this->get_travis_url_regex(),
 			array( $this, 'handler' )
 		 );
 
 		add_shortcode( $this->get_shortcode_tag(), array( $this, 'shortcode' ) );
 
-		add_filter(
-			'jetpack_shortcodes_to_include',
-			array( $this, 'jetpack_shortcodes_to_include' )
-		 );
-
-		add_filter(
-			'oembed_providers',
-			array( $this, 'oembed_providers' )
-		);
-
 	}
 
-	public function jetpack_shortcodes_to_include( $incs )
-	{
-		$includes = array();
-		foreach ( $incs as $inc ) {
-			if ( !preg_match( "/gist\.php\z/", $inc ) ) {
-				$includes[] = $inc;
-			}
-		}
-		return $includes;
-	}
-
-	function oembed_providers( $providers )
-	{
-		//Support to Press This.
-		global $pagenow;
-		if ( 'press-this.php' == $pagenow && ! array_key_exists( $this->get_gist_regex(), $providers ) ) {
-			$providers[ $this->get_gist_regex() ] = array(
-				'https://gist.github.com/{id}.{format}', //dummy value
-				true
-			);
-		}
-		return $providers;
-	}
-
-	public function wp_head()
-	{
+	public function wp_head() {
 		?>
 		<style>
 		.gist table {
@@ -108,58 +71,102 @@ class gist {
 		<?php
 	}
 
-	public function handler( $m, $attr, $url, $rattr )
-	{
-		if ( !isset( $m[7] ) || !$m[7] ) {
-			$m[7] = null;
+	// replace here
+	public function handler( $m, $attr, $url, $rattr ) {
+
+		$name = $m[1];
+		$repo = $m[2];
+		$type = $m[3];
+
+		$url_parsed = parse_url( $m[0] );
+
+		$id = explode( '/', $url_parsed['path'] )[4];
+
+		if ( isset( $url_parsed['fragment'] ) && $url_parsed['fragment'] ) {
+			$fragment = $url_parsed['fragment'];
+			$match = preg_match(
+				'/^L[1-9][0-9]*$/',
+				$fragment
+			);
+			if ( $match > 0 ) {
+				$line = substr( $fragment, 1, strlen( $fragment ) - 1 );
+			} else {
+				$line = 0;
+			}
+		} else {
+			$line = NULL;
 		}
 
 		return $this->shortcode( array(
-			'url'  => $m[1],
-			'id'   => $m[3],
-			'file' => $m[7],
+			'name' => $name,
+			'repo' => $repo,
+			$type  => $id,
+			'line' => $line,
 		) );
 	}
 
-	public function shortcode( $p )
-	{
-		if ( isset( $p['url'] ) && $p['url'] ) {
-			$url = $p['url'];
-		} elseif ( preg_match( "/^[a-zA-Z0-9]+$/", $p['id'] ) ) {
-			$url = 'https://gist.github.com/' . $p['id'];
+	public function shortcode( $p ) {
+
+		// required
+		if ( isset( $p['name'] ) && $p['name'] ) {
+			$name = $p['name'];
 		}
 
-		$noscript = sprintf(
-			__( 'View the code on <a href="%s">Gist</a>.', 'embed-travis' ),
-			esc_url( $url )
+		// required
+		if ( isset( $p['repo'] ) && $p['repo'] ) {
+			$repo = $p['repo'];
+		}
+
+		// One of two are required
+		if ( isset( $p['builds'] ) && $p['builds'] ) {
+			$type = 'builds';
+			$id = $p['builds'];
+		} elseif ( isset( $p['jobs'] ) && $p['jobs'] ) {
+			$type = 'jobs';
+			$id = $p['jobs'];
+		}
+
+		$url = implode(
+			'/',
+			array(
+				self::TRAVIS_URL_PREFIX,
+				$name,
+				$repo,
+				$type,
+				$id
+			)
 		);
 
-		$url = $url . '.js';
+		$html_id = "$type-$id";
 
-		if ( isset( $p['file'] ) && $p['file'] ) { //RRD: Fixed line 79 error by adding isset()
-			$file = preg_replace( '/[\-\.]([a-z]+)$/', '.\1', $p['file'] );
-			$url = $url . '?file=' . $file;
+		// optional
+		if ( isset( $p['line'] ) && $p['line'] ) {
+			$line = $p['line'];
+			$url .= '#L' . $line;
+			$html_id .= "-L$line";
+			$line_option =  " data-line=\"$line\"";
+		} else {
+			$line_option = '';
 		}
 
-		if( is_feed() ){
-			return $noscript;
-		}else{
-			return sprintf(
-				'<div class="oembed-gist"><script src="%s"></script><noscript>%s</noscript></div>',
-				$url,
-				$noscript
-			);
-		}
+		$noscript = $this::get_noscript( $url );
+
+		return is_feed() ? $noscript : "<div id=\"$html_id\" class=\"embed-travis\" data-name=\"$name\" data-repo=\"$repo\" data-$type=\"$id\"$line_option><noscript>$noscript</noscript></div>";
 	}
 
-	public function get_gist_regex()
-	{
+	public static function get_noscript( $url ) {
+		return sprintf(
+			__( 'View the build log on <a href="%s">Travis CI</a>.', 'embed-travis' ),
+			esc_url( $url )
+		);
+	}
+
+	public function get_travis_url_regex() {
 		return $this->regex;
 	}
 
-	private function get_shortcode_tag()
-	{
-		return apply_filters( 'oembed_gist_shortcode_tag', $this->shotcode_tag );
+	private function get_shortcode_tag() {
+		return apply_filters( 'embed_travis_shortcode_tag', $this->shotcode_tag );
 	}
 
 }

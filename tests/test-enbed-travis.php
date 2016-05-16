@@ -25,138 +25,103 @@ class EmbedTravis_Test extends WP_UnitTestCase
 	 */
 	public function shortcode_test()
 	{
-		// travis build log of single job
 		$this->assertRegExp(
-			'/^(<div id="build126275217" class="embed-travis"><table>).*(<\/table><\/div>)$/',
-			do_shortcode( '[travis build_id="126275217"]' )
+			'/^(<div id="builds-126275217" class="embed-travis" data-name="KamataRyo" data-repo="nationalpark-map" data-builds="126275217"><noscript>).*(<\/noscript><\/div>)$/',
+			do_shortcode( '[travis name="KamataRyo" repo="nationalpark-map" builds="126275217"]' )
 		);
+
+		$this->assertRegExp(
+			'/^(<div id="jobs-130318268" class="embed-travis" data-name="KamataRyo" data-repo="inherit-theme-mods" data-jobs="130318268"><noscript>).*(<\/noscript><\/div>)$/',
+			do_shortcode( '[travis name="KamataRyo" repo="inherit-theme-mods" jobs="130318268"]' )
+		);
+
+		$this->assertRegExp(
+			'/^(<div id="builds-126275217-L120" class="embed-travis" data-name="KamataRyo" data-repo="nationalpark-map" data-builds="126275217" data-line="120"><noscript>).*(<\/noscript><\/div>)$/',
+			do_shortcode( '[travis name="KamataRyo" repo="nationalpark-map" builds="126275217" line="120"]' )
+		);
+
+		$this->assertRegExp(
+			'/^(<div id="jobs-130318268-L145" class="embed-travis" data-name="KamataRyo" data-repo="inherit-theme-mods" data-jobs="130318268" data-line="145"><noscript>).*(<\/noscript><\/div>)$/',
+			do_shortcode( '[travis name="KamataRyo" repo="inherit-theme-mods" jobs="130318268" line="145"]' )
+		);
+
 	}
 
 	/**
-	 * General gist
+	 * build with single job, without line
 	 *
 	 * @test
 	 */
 	public function the_content_01()
 	{
+		$url = 'https://travis-ci.org/KamataRyo/nationalpark-map/builds/126275217';
+		$noscript = Travis::get_noscript( $url );
+
 		$this->setup_postdata( array(
-			'post_content' => 'https://gist.github.com/miya0001/cabf03ef768ba7f9ba7d',
+			'post_content' => $url,
 		) );
 
-		$this->expectOutputString('<div class="oembed-gist"><script src="https://gist.github.com/miya0001/cabf03ef768ba7f9ba7d.js"></script><noscript>View the code on <a href="https://gist.github.com/miya0001/cabf03ef768ba7f9ba7d">Gist</a>.</noscript></div>'."\n");
+		$this->expectOutputString('<div id="builds-126275217" class="embed-travis" data-name="KamataRyo" data-repo="nationalpark-map" data-builds="126275217"><noscript>' . $noscript . '</noscript></div>'."\n");
 
 		the_content();
 	}
 
 	/**
-	 * General gist with file name
+	 * build one of jobs, without line
 	 *
 	 * @test
 	 */
 	public function the_content_02()
 	{
+		$url = 'https://travis-ci.org/KamataRyo/inherit-theme-mods/jobs/130318268';
+		$noscript = Travis::get_noscript( $url );
+
 		$this->setup_postdata( array(
-			'post_content' => 'https://gist.github.com/miya0001/cabf03ef768ba7f9ba7d#file-setuser-sh',
+			'post_content' => $url,
 		) );
 
-		$this->expectOutputString('<div class="oembed-gist"><script src="https://gist.github.com/miya0001/cabf03ef768ba7f9ba7d.js?file=setuser.sh"></script><noscript>View the code on <a href="https://gist.github.com/miya0001/cabf03ef768ba7f9ba7d">Gist</a>.</noscript></div>'."\n");
+		$this->expectOutputString('<div id="jobs-130318268" class="embed-travis" data-name="KamataRyo" data-repo="inherit-theme-mods" data-jobs="130318268"><noscript>' . $noscript . '</noscript></div>'."\n");
 
 		the_content();
 	}
 
 	/**
-	 * Old api of gist
+	 * build with single job, with line
 	 *
 	 * @test
 	 */
 	public function the_content_03()
 	{
+		$url = 'https://travis-ci.org/KamataRyo/nationalpark-map/builds/126275217#L120';
+		$noscript = Travis::get_noscript( $url );
+
 		$this->setup_postdata( array(
-			'post_content' => 'https://gist.github.com/2759039',
+			'post_content' => $url,
 		) );
 
-		$this->expectOutputString('<div class="oembed-gist"><script src="https://gist.github.com/2759039.js"></script><noscript>View the code on <a href="https://gist.github.com/2759039">Gist</a>.</noscript></div>'."\n");
+		$this->expectOutputString('<div id="builds-126275217-L120" class="embed-travis" data-name="KamataRyo" data-repo="nationalpark-map" data-builds="126275217" data-line="120"><noscript>' . $noscript . '</noscript></div>'."\n");
 
 		the_content();
 	}
 
 	/**
-	 * Old api of gist with file name
+	 * build one of jobs, with line
 	 *
 	 * @test
 	 */
 	public function the_content_04()
 	{
+		$url = 'https://travis-ci.org/KamataRyo/inherit-theme-mods/jobs/130318268#L145';
+		$noscript = Travis::get_noscript( $url );
+
 		$this->setup_postdata( array(
-			'post_content' => 'https://gist.github.com/2759039#file_2.php',
+			'post_content' => $url,
 		) );
 
-		$this->expectOutputString('<div class="oembed-gist"><script src="https://gist.github.com/2759039.js?file=2.php"></script><noscript>View the code on <a href="https://gist.github.com/2759039">Gist</a>.</noscript></div>'."\n");
+		$this->expectOutputString('<div id="jobs-130318268-L145" class="embed-travis" data-name="KamataRyo" data-repo="inherit-theme-mods" data-jobs="130318268" data-line="145"><noscript>' . $noscript . '</noscript></div>'."\n");
 
 		the_content();
 	}
 
-	/**
-	 * Old gist and new api of gist
-	 *
-	 * @test
-	 */
-	public function the_content_05()
-	{
-		$this->setup_postdata( array(
-			'post_content' => 'https://gist.github.com/miya0001/2759039',
-		) );
 
-		$this->expectOutputString('<div class="oembed-gist"><script src="https://gist.github.com/miya0001/2759039.js"></script><noscript>View the code on <a href="https://gist.github.com/miya0001/2759039">Gist</a>.</noscript></div>'."\n");
-
-		the_content();
-	}
-
-	/**
-	 * Old gist and new api of gist with file name
-	 *
-	 * @test
-	 */
-	public function the_content_06()
-	{
-		$this->setup_postdata( array(
-			'post_content' => 'https://gist.github.com/miya0001/2759039#file-2-php',
-		) );
-
-		$this->expectOutputString('<div class="oembed-gist"><script src="https://gist.github.com/miya0001/2759039.js?file=2.php"></script><noscript>View the code on <a href="https://gist.github.com/miya0001/2759039">Gist</a>.</noscript></div>'."\n");
-
-		the_content();
-	}
-
-	/**
-	 * Gist with revison
-	 *
-	 * @test
-	 */
-	public function the_content_07()
-	{
-		$this->setup_postdata( array(
-			'post_content' => 'https://gist.github.com/miya0001/0583c8105592a4a1d9f4/7fbe9b0dfd0e4db493fa43630fd7345e49484a81',
-		) );
-
-		$this->expectOutputString('<div class="oembed-gist"><script src="https://gist.github.com/miya0001/0583c8105592a4a1d9f4/7fbe9b0dfd0e4db493fa43630fd7345e49484a81.js"></script><noscript>View the code on <a href="https://gist.github.com/miya0001/0583c8105592a4a1d9f4/7fbe9b0dfd0e4db493fa43630fd7345e49484a81">Gist</a>.</noscript></div>'."\n");
-
-		the_content();
-	}
-
-	/**
-	 * Gist with revison & file
-	 *
-	 * @test
-	 */
-	public function the_content_08()
-	{
-		$this->setup_postdata( array(
-			'post_content' => 'https://gist.github.com/miya0001/0583c8105592a4a1d9f4/7fbe9b0dfd0e4db493fa43630fd7345e49484a81#file-gistfile1-sh',
-		) );
-
-		$this->expectOutputString('<div class="oembed-gist"><script src="https://gist.github.com/miya0001/0583c8105592a4a1d9f4/7fbe9b0dfd0e4db493fa43630fd7345e49484a81.js?file=gistfile1.sh"></script><noscript>View the code on <a href="https://gist.github.com/miya0001/0583c8105592a4a1d9f4/7fbe9b0dfd0e4db493fa43630fd7345e49484a81">Gist</a>.</noscript></div>'."\n");
-
-		the_content();
-	}
 }
