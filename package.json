@@ -23,7 +23,7 @@
     "build": "./node_modules/gulp/bin/gulp.js build",
     "install": "npm run build",
     "generatePot": "grunt i18n",
-    "test": "ls ./js/*.js; ls ./css/*.css"
+    "test": "ls ./js/*.js"
   },
   "devDependencies": {
     "grunt": "^0.4.5",
@@ -32,6 +32,9 @@
     "gulp-coffee": "^2.3.2",
     "gulp-gettext": "^0.3.0",
     "gulp-notify": "^2.2.0",
-    "gulp-plumber": "^1.1.0"
+    "gulp-plumber": "^1.1.0",
+    "jquery": "1.12.3",
+    "mocha": "^2.4.5",
+    "should": "^8.3.1"
   }
 }
