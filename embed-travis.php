@@ -23,12 +23,13 @@ class Travis {
 
 	public function plugins_loaded() {
 		add_action( 'wp_enqueue_scripts', array( $this, 'enquene_script' ) );
+		add_action( 'admin_enqueue_scripts', array( $this, 'enquene_script' ) );
 		add_action( 'wp_head', array( $this, 'wp_head' ) );
 
 		load_plugin_textdomain(
 			'embed-travis',
 			false,
-			dirname( plugin_basename( __FILE__ ) ) . '/languages'
+			plugins_url( implode( array( 'languages' ), DIRECTORY_SEPARATOR ), __FILE__ )
 		);
 
 		wp_embed_register_handler(
@@ -44,18 +45,59 @@ class Travis {
 	public function enquene_script() {
 		wp_register_script(
 			'embed-travis-script',
-			dirname( plugin_basename( __FILE__ ) ) . '/js/embed-travis.js',
+			plugins_url( implode( array( 'js', 'embed-travis.js' ), DIRECTORY_SEPARATOR ), __FILE__ ),
 			array( 'jquery' ),
 			'',
 			true
 		);
+		wp_enqueue_script( 'jquery' );
 		wp_enqueue_script( 'embed-travis-script' );
 	}
 
 	public function wp_head() {
 		?>
 		<style>
-			.embed-travis {}
+			.embed-travis .log-body p {
+			    padding: 0 15px 0 55px;
+			    margin: 0;
+			    min-height: 16px;
+			}
+			.embed-travis .log-body p:hover{
+				background-color: #444!important;
+			}
+			.embed-travis .log-body a {
+    			color: #666;
+				display: inline-block;
+			    text-align: right;
+			    min-width: 40px;
+			    margin-left: -33px;
+			    text-decoration: none;
+				box-shadow:none;
+			}
+			.embed-travis .log-body a:before {
+				content: counter(line-numbering);
+				counter-increment: line-numbering;
+				padding-right: 1em;
+			}
+			.embed-travis .log-body pre {
+				clear: left;
+				min-height: 42px;
+				padding: 15px 0;
+				background-color: #222;
+				border: 1px solid #888;
+				counter-reset: line-numbering;
+				margin-top: 0;
+				font-family: Monaco,monospace;
+				color: #f1f1f1;
+				font-size: 12px;
+				line-height: 19px;
+				white-space: pre-wrap;
+				/*word-wrap: break-word;*/
+
+				width: 100%;
+				height: 350px;
+				overflow: scroll;
+			}
 		</style>
 		<?php
 	}

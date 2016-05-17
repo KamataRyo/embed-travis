@@ -22,6 +22,7 @@ before_script:
 - npm cache clean
 - npm install -g  npm-install-retry
 - npm-install-retry --wait 500 --attempts 10
+- npm run build
 
 script:
 - npm test

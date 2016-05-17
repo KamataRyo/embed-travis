@@ -4,6 +4,7 @@ node_modules/
 lib/
 npm-debug.log/
 js/*.js
+tests/*.js
 css/*.css
 languages/*.mo
 .sass-cache
