@@ -41,15 +41,19 @@ class Travis {
 		add_shortcode( $this->get_shortcode_tag(), array( $this, 'shortcode' ) );
 	}
 
-
 	public function enquene_script() {
+		wp_register_script(
+			'ansi2html',
+			plugins_url( implode( array( 'js', 'ansi2html','lib', 'index.js' ), DIRECTORY_SEPARATOR ), __FILE__ )
+		);
 		wp_register_script(
 			'embed-travis-script',
 			plugins_url( implode( array( 'js', 'embed-travis.js' ), DIRECTORY_SEPARATOR ), __FILE__ ),
-			array( 'jquery' ),
+			array( 'jquery', 'ansi2html' ),
 			'',
 			true
 		);
+		wp_enqueue_script( 'ansi2html' );
 		wp_enqueue_script( 'jquery' );
 		wp_enqueue_script( 'embed-travis-script' );
 	}
@@ -61,6 +65,7 @@ class Travis {
 			    padding: 0 15px 0 55px;
 			    margin: 0;
 			    min-height: 16px;
+				position: relative;
 			}
 			.embed-travis .log-body p:hover{
 				background-color: #444!important;
@@ -68,16 +73,12 @@ class Travis {
 			.embed-travis .log-body a {
     			color: #666;
 				display: inline-block;
+				padding-right: 1em;
 			    text-align: right;
 			    min-width: 40px;
 			    margin-left: -33px;
 			    text-decoration: none;
 				box-shadow:none;
-			}
-			.embed-travis .log-body a:before {
-				content: counter(line-numbering);
-				counter-increment: line-numbering;
-				padding-right: 1em;
 			}
 			.embed-travis .log-body pre {
 				clear: left;
@@ -85,7 +86,6 @@ class Travis {
 				padding: 15px 0;
 				background-color: #222;
 				border: 1px solid #888;
-				counter-reset: line-numbering;
 				margin-top: 0;
 				font-family: Monaco,monospace;
 				color: #f1f1f1;

@@ -1,92 +1,27 @@
-#
-# line = '[31;1mThe command "npm test" exited with 1.'
-# console.log /\[([34][0-9]|[0148]);([34][0-9]|[0148])m/.test line
-# console.log line.replace /\[([34][0-9]|[0148]);([34][0-9]|[0148])m/, (match,p1) ->
-#     p1 + 'aaaa'
-# return
-
-styles =
-    '[0m': {'font-weight': 'normal','text-decoration':'none', display: 'inline'}# ''#sgr0	Reset all attributes
-    '[1m': {'font-weight': 'bold'}
-    '[4m': {'text-decoration': 'underline'}
-    '[8m': {display: 'inline'}
-    '[20m': {}
-    '[21m': {}
-    '[22m': {}
-    '[23m': {}
-    '[24m': {}
-    '[25m': {}
-    '[26m': {}
-    '[27m': {}
-    '[28m': {}
-    '[29m': {}
-    '[30m': {color:'#222'} # black
-    '[31m': {color:'#FF9B93'} #red
-    '[32m': {color:'#B1FD79'} #green
-    '[33m': {color:'#FFFFB6'} # yellow
-    '[34m': {color:'#B5DCFE'} #blue
-    '[35m': {color:'#FF73FD'} #magemta
-    '[36m': {color:'cyan'}
-    '[37m': {color:'#f1f1f1'} # white
-    '[39m': {color:'#f1f1f1'} # default
-    '[40m': {'background-color': 'black'}
-    '[41m': {'background-color': 'red'}
-    '[42m': {'background-color': 'green'}
-    '[43m': {'background-color': 'yellow'}
-    '[44m': {'background-color': 'blue'}
-    '[45m': {'background-color': 'magenta'}
-    '[46m': {'background-color': 'cyan'}
-    '[47m': {'background-color': 'white'}
-    '[49m': {'background-color': '#222'} # default
-
-
 
 tablify = (lines) ->
+    if typeof lines is 'string' then lines = lines.split '\n'
     html = ''
-    for line in lines
-        # line = line.replace /\[0K/g, ''
-        # fold start
-        if /^travis_fold:start:/.test line
-            line = line.replace /^travis_fold:start:/g, ''
-        # fold end
-        else if /^travis_fold:end:/.test line
-            line = line.replace /^travis_fold:end:/g, ''
-        # time start
-        if /^travis_time:start:/.test line
-            line = line.replace /^travis_time:start:/g, ''
-        # time end
-        if /^travis_time:end:/.test line
-            line = line.replace /^travis_time:end:/g, ''
+    for line, index in lines
+        attr = ''
+        line = line.replace /travis_(fold|time):(start|end):(.+)/g, (match, p1, p2, p3) ->
+            if p1? and p2?
+                attr += " data-#{p1}-#{p2}=\"#{p3}\""
+            return ''
 
-        stylePattern = /(.)(\[([234][0-9]|[0148])m|\[([234][0-9]|[0148]);([234][0-9]|[0148])m)/g
-        styleStackNum = 0
+        line = ansi2html(line)
+        line = line.replace new RegExp(String.fromCharCode(13),'g'), ''
+        line = line.replace new RegExp(String.fromCharCode(27),'g'), ''
+        line = line.replace /\[\d?K/g, ''
 
-        if stylePattern.test line
-            line = line.replace stylePattern, (match, p1, p2, p3, p4, p5) ->
-                if '%1B' isnt escape(p1)
-                    return match
-                if !(p4? and p5?)
-                    style = (("#{key}:#{value}") for key, value of styles[p2]).join ';'
-                else
-                    [before, after] = ["[#{p4}m", "[#{p5}m"]
-                    style  = (("#{key}:#{value}") for key, value of styles[before]).join ';'
-                    style += ';' + (("#{key}:#{value}") for key, value of styles[after]).join ';'
-                styleStackNum++
-                return "<span style=\"#{style}\">"
-
-            line += '</span>'.repeat styleStackNum
-
-
-
-        html += "<p><a></a>#{line}</p>"
+        html += "<p#{attr}><a>#{index + 1}</a>#{line}</p>"
     return "<div class=\"log-body\"><pre>#{html}</pre></div>"
 
 
 app = ($) ->
     $container = $('.embed-travis')
-    # name = $container.data 'name'
-    # repo = $container.data 'repo'
     type = if $container.data 'builds' then 'builds' else 'jobs'
+    # いずれにせよ一旦requestし、metaを取得する。buildsの場合はこの時jobs_id(?)を得る
     id = $container.data type
 
     $.ajax {
@@ -96,6 +31,52 @@ app = ($) ->
         }
     }
         .then (lines) ->
-            $container.append tablify lines.split '\n'
+            $container.append tablify lines #synchronous
+
+            $('p[data-fold-start]').each ->
+                $ '<span>' + ($(this).data 'fold-start') + '</span>'
+                    .css 'position', 'absolute'
+                    .css 'display', 'block'
+                    .css 'right', '85px'
+                    .css 'top', '4px'
+                    .css 'padding', '2px 7px 2px'
+                    .css 'line-height', '10px'
+                    .css 'font-size', '10px'
+                    .css 'background-color', '#666'
+                    .css 'border-radius', '6px'
+                    .css 'color', '#bbb;'
+                    .prependTo $(this)
+
+            $('p[data-time-start]').each ->
+                $p = $(this)
+                until $p.data 'time-end'
+                    $p = $p.next()
+                duration = $p.data('time-end').match(/duration=(\d*)$/)[1] / 10000000
+                $ '<span>' + Math.round(duration) / 100 + 's</span>'
+                    .css 'position', 'absolute'
+                    .css 'display', 'block'
+                    .css 'right', '12px'
+                    .css 'top', '4px'
+                    .css 'padding', '2px 7px 2px'
+                    .css 'line-height', '10px'
+                    .css 'font-size', '10px'
+                    .css 'background-color', '#666'
+                    .css 'border-radius', '6px'
+                    .css 'color', '#bbb;'
+                    .prependTo $(this)
+
+            $('p[data-fold-start]>a').click ->
+                if $(this).parent().hasClass 'fold'
+                    $(this).parent().removeClass 'fold'
+                    $p = $(this).parent().next()
+                    until $p.data 'fold-end'
+                        $p.show()
+                        $p = $p.next()
+                else
+                    $(this).parent().addClass 'fold'
+                    $p = $(this).parent().next()
+                    until $p.data 'fold-end'
+                        $p.hide()
+                        $p = $p.next()
 
 jQuery(document).ready app
