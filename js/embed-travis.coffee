@@ -1,6 +1,14 @@
+#
+# some utilities
+#
+util =
+    nsec2sec: (nsec) -> Math.round( nsec / 10000000) / 100
 
+
+#
+# terminal codes to Html
+#
 ansi2Html = (line, styleSets) ->
-
     ansi = /(.)\[(\d+;)?(\d+)*m/g
     ESC = String.fromCharCode '27'
     stack = 0
@@ -25,8 +33,34 @@ ansi2Html = (line, styleSets) ->
 
     return (line.replace ansi, callback) + '</span>'.repeat stack
 
+#
+# detect travis control code
+#
+formatLines = (lines) ->
+    if typeof lines is 'string' then lines = lines.split '\n'
+    html = ''
+    ESC = String.fromCharCode 27
+    CR = String.fromCharCode 13
+    for line, index in lines
+        console.log "[#{index+1}]#{line}"
+        attr = ''
+        line = line.replace /travis_(fold|time):(start|end):(.+)/g, (match, p1, p2, p3) ->
+            if p1? and p2?
+                attr += " data-#{p1}-#{p2}=\"#{p3}\""
+            return ''
 
+        line = ansi2Html line, styleSets
+        line = line.replace new RegExp(CR,'g'), ''
+        line = line.replace new RegExp(ESC,'g'), ''
+        line = line.replace /\[\d?K/g, ''
 
+        html += "<p#{attr}><a>#{index + 1}</a>#{line}</p>"
+
+    return html
+
+#
+# define terminal code styles
+#
 styleSets =
     0:  { 'font-weight': 'normal', 'font-style': 'normal', 'text-decoration': 'none','background-color': '#222', color: '#f1f1f1' }
     1:  { 'font-weight': 'bold' }
@@ -59,63 +93,68 @@ styleSets =
     47: { 'background-color': '#f1f1f1' } # white
     49: { 'background-color': '#222' } # default
 
-
-
-
-formatLines = (lines) ->
-    if typeof lines is 'string' then lines = lines.split '\n'
-    html = ''
-    ESC = String.fromCharCode 27
-    CR = String.fromCharCode 13
-    for line, index in lines
-
-        attr = ''
-        line = line.replace /travis_(fold|time):(start|end):(.+)/g, (match, p1, p2, p3) ->
-            if p1? and p2?
-                attr += " data-#{p1}-#{p2}=\"#{p3}\""
-            return ''
-
-        line = ansi2Html line, styleSets
-        line = line.replace new RegExp(CR,'g'), ''
-        line = line.replace new RegExp(ESC,'g'), ''
-        line = line.replace /\[\d?K/g, ''
-
-        html += "<p#{attr}><a>#{index + 1}</a>#{line}</p>"
-
-    return html
-
-
-
-app = ($) ->
+#
+# main module
+#
+main = ($) ->
+    # # var sets
+    #   type(builds or jobs)
+    #     => repo_slug, number, state, started_at, finished_atを特定
     $container = $('.embed-travis')
     type = if $container.data 'builds' then 'builds' else 'jobs'
-    # いずれにせよ一旦requestし、metaを取得する。buildsの場合はこの時jobs_id(?)を得る
     id = $container.data type
+
+    # get meta info
+    $.ajax {
+        url: "https://api.travis-ci.org/#{type}/#{id}"
+        header: {
+            Accept: 'application/vnd.travis-ci.2+json'
+        }
+    }
+        .then (res) ->
+            if res.build
+                if res.build.job_ids
+                    type = 'job'
+                    id = res.build.job_ids
+
+
+            {repository_slug, number, state, started_at, finished_at} = res[type]
+            url = "https://travis-ci.org/#{repository_slug}/#{type}/#{id}"
+            $meta = $ 'div'
+                .addClass 'travis-header'
+                .append $ "<dt><dl>slug</dl><dd><a href=\"url\">#{repository_slug}</a></dd></dt>"
+                .append $ "<dt><dl>build number</dl><dd>##{number}</dd></dt>"
+                .append $ "<dt><dl>build state</dl><dd>#{state}</dd></dt>"
+                .append $ "<dt><dl>duration</dl><dd>#{started_at - finished_at}</dd></dt>"
+            $container.before $meta
 
     $.ajax {
         url: "https://s3.amazonaws.com/archive.travis-ci.org/#{type}/#{id}/log.txt"
         headers: {
-            Accept: 'Accept: text/plain'
+            Accept: 'text/plain'
         }
     }
         .then (lines) ->
             $container.append $ '<div class="travis-log-body"><pre>' + formatLines(lines) + '</pre></div>'
 
-            $('.travis-log-body p[data-fold-start]').each ->
-                $(this).prepend $ '<span class="travis-info travis-fold-start">' + ($(this).data 'fold-start') + '</span>'
-
             $('.travis-log-body p[data-time-start]').each ->
                 $paragraph = $(this)
                 until $paragraph.data 'time-end'
                     $paragraph = $paragraph.next()
-                duration = Math.round($paragraph.data('time-end').match(/duration=(\d*)$/)[1] / 10000000) / 100
+
+                duration = util.nsec2sec $paragraph.data('time-end').match(/duration=(\d*)$/)[1]
                 $(this).prepend $ "<span class=\"travis-info travis-time-start\">#{duration}s</span>"
+
+
+            $('.travis-log-body p[data-fold-start]').each ->
+                $(this).prepend $ '<span class="travis-info travis-fold-start">' + ($(this).data 'fold-start') + '</span>'
 
 
             switchFold = ->
                 close = 'travis-fold-close'
                 open = 'travis-fold-open'
                 $paragraph = $(this).parent()
+                label = $paragraph.data 'fold-start'
 
                 # open
                 if $paragraph.hasClass close
@@ -123,18 +162,21 @@ app = ($) ->
                         .removeClass close
                         .addClass open
                     $next = $paragraph.next()
-                    until ($next.data 'fold-end') or ! $next?
+                    until (label is $next.data 'fold-end') or ($next.data 'fold-start')?
                         $next.show()
                         $next = $next.next()
+
                 # close
                 else
                     $paragraph
                         .removeClass open
                         .addClass close
                     $next = $paragraph.next()
-                    until ($next.data 'fold-end') or ! $next?
+                    until (label is $next.data 'fold-end') or ($next.data 'fold-start')?
                         $next.hide()
                         $next = $next.next()
+
+                $paragraph.show()
 
 
             $foldHandlers = $('.travis-log-body p[data-fold-start]>a')
@@ -148,7 +190,12 @@ app = ($) ->
                     $(this).removeClass 'travis-active-line'
                 $(this).addClass 'travis-active-line'
 
+#
+# engine handling
+#
 if module?
-    module.exports = { ansi2Html, formatLines }
+    # export for test
+    module.exports = { util, ansi2Html, formatLines }
 else if window?
-    jQuery(document).ready app
+    # exec on browser
+    jQuery(document).ready main

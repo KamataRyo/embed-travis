@@ -43,17 +43,12 @@ class Travis {
 
 	public function enquene_script() {
 		wp_register_script(
-			'ansi2html',
-			plugins_url( implode( array( 'js', 'ansi2html','lib', 'index.js' ), DIRECTORY_SEPARATOR ), __FILE__ )
-		);
-		wp_register_script(
 			'embed-travis-script',
 			plugins_url( implode( array( 'js', 'embed-travis.js' ), DIRECTORY_SEPARATOR ), __FILE__ ),
-			array( 'jquery', 'ansi2html' ),
+			array( 'jquery' ),
 			'',
 			true
 		);
-		wp_enqueue_script( 'ansi2html' );
 		wp_enqueue_script( 'jquery' );
 		wp_enqueue_script( 'embed-travis-script' );
 	}
@@ -84,28 +79,27 @@ class Travis {
 			.travis-log-body p:hover, .travis-log-body p.travis-active-line{
 				background-color: #444!important;
 			}
-			.travis-log-body p.travis-fold-open:before{
-				content: "▼";
+			.travis-log-body p.travis-fold-open a:before{
+				content: "\25BC";
 				color: #666;
 				font-size: .75em;
 				position: absolute;
-				left: 1em;
+				left: .5em;
 			}
 			.travis-log-body p.travis-fold-open a, .travis-log-body p.travis-fold-close a {
 				cursor: pointer;
 			}
-			.travis-log-body p.travis-fold-close:before{
-				content: "▶︎";
+			.travis-log-body p.travis-fold-close a:before{
+				content: "\25B6";
 				color: #666;
 				font-size: .75em;
 				position: absolute;
-				left: 1em;
+				left: .5em;
 			}
 			.travis-log-body a {
     			color: #666;
 				display: inline-block;
 				padding-right: 1em;
-				width: auto;
 			    text-align: right;
 			    width: 40px;
 			    margin-left: -35px;
@@ -122,6 +116,7 @@ class Travis {
 				background-color: #666;
 				border-radius: 6px;
 				color: #bbb;
+				text-align: right;
 			}
 			.travis-fold-start {
 				right: 85px;
