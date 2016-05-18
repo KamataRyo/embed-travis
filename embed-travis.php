@@ -131,12 +131,12 @@ class Travis {
 
 	// replace here
 	public function handler( $m, $attr, $url, $rattr ) {
+		$url    = $m[0];
+		$author = $m[1];
+		$repo   = $m[2];
+		$type   = $m[3];
 
-		$name = $m[1];
-		$repo = $m[2];
-		$type = $m[3];
-
-		$url_parsed = parse_url( $m[0] );
+		$url_parsed = parse_url( $url );
 
 		$id = explode( '/', $url_parsed['path'] )[4];
 
@@ -156,7 +156,8 @@ class Travis {
 		}
 
 		return $this->shortcode( array(
-			'name' => $name,
+			'url'  => $url,
+			'author' => $author,
 			'repo' => $repo,
 			$type  => $id,
 			'line' => $line,
@@ -178,25 +179,37 @@ class Travis {
 		if ( ! self::is_positive_int( $id ) ) {
 			return is_feed() ? '' : self::get_embed_failure();
 		}
+		$html_id = "$type-$id";
 
-		// optional
+		// optionals
+		$url = NULL;
+		if ( isset( $p['url'] ) && $p['url'] ) {
+			$url = $p['url'];
+		}
+
+		$author = NULL;
+		if ( isset( $p['author'] ) && $p['author'] ) {
+			$author = $p['author'];
+		}
+
+		$repo = NULL;
+		if ( isset( $p['repo'] ) && $p['repo'] ) {
+			$repo = $p['repo'];
+		}
+
+		$line = NULL;
 		if ( isset( $p['line'] ) && $p['line'] ) {
 			$line = $p['line'];
 			if ( ! self::is_positive_int( $line ) ) {
 				return is_feed() ? '' : self::get_embed_failure();
 			}
-		} else {
-			$line_option = '';
-		}
-
-		$html_id = "$type-$id";
-
-		// optional
-		if ( isset( $p['line'] ) && $p['line'] ) {
-			$line = $p['line'];
 			$html_id .= "-L$line";
 			$line_hash = "#L$line";
-			$line_option =  " data-line=\"$line\"";
+		}
+
+
+		if ( isset( $p['line'] ) && $p['line'] ) {
+			$line = $p['line'];
 		} else {
 			$line_hash = '';
 			$line_option = '';
@@ -204,8 +217,40 @@ class Travis {
 
 		$noscript = Travis::get_noscript( "$id$line_hash" );
 
-		return is_feed() ? $noscript : "<div id=\"$html_id\" class=\"embed-travis\" data-$type=\"$id\"$line_option><noscript>$noscript</noscript></div>";
+		return is_feed() ? $noscript : Travis::create_tag(
+			'div',
+			array(
+				'id' => $html_id,
+				'class' => 'embed-travis',
+				'data-url' => $url,
+				'data-author' => $author,
+				'data-repo'  => $repo,
+				"data-$type" => $id,
+				'data-line' => $line,
+			),
+			"<noscript>$noscript</noscript>"
+		); # xss ok
+		// return is_feed() ? $noscript : "<div id=\"$html_id\" class=\"embed-travis\"$url_attr data-$type=\"$id\"$line_option><noscript>$noscript</noscript></div>";
 	}
+
+	private static function create_tag( $tagname, $attributes, $content ) {
+		$tagname = esc_html( $tagname );
+		$attribute_strings = array( ''	 );
+		foreach ( $attributes as $key => $value ) {
+			if ( NULL !== $value ) {
+				$key = esc_attr( $key );
+				$value = esc_attr( $value );
+				if ( '' === $value ) {
+					array_push( $attribute_strings, $key );
+				} else {
+					array_push( $attribute_strings, "$key=\"$value\"" );
+				}
+			}
+		}
+
+		return "<$tagname" . implode( ' ', $attribute_strings ) . ">$content</$tagname>";
+	}
+
 
 	public static function get_noscript( $id ) {
 		return sprintf(

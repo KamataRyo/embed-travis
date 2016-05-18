@@ -103,7 +103,7 @@ class EmbedTravis_Test extends WP_UnitTestCase {
 			'post_content' => $url,
 		) );
 
-		$this->expectOutputString('<div id="builds-126275217" class="embed-travis" data-url="' . $url . '" data-author="KamataRyo data-repo="nationalpark-map" data-builds="126275217"><noscript>' . $noscript . '</noscript></div>'."\n");
+		$this->expectOutputString('<div id="builds-126275217" class="embed-travis" data-url="' . $url . '" data-author="KamataRyo" data-repo="nationalpark-map" data-builds="126275217"><noscript>' . $noscript . '</noscript></div>'."\n");
 
 		the_content();
 	}
