@@ -757,65 +757,69 @@ Done. Your build exited with 1.
 ###
 
 should = require 'should'
-lib = require '../js/lib'
-ESC = String.fromCharCode '27'
+ESC = String.fromCharCode 27
+CR = String.fromCharCode 13
+
+{ ansi2Html, formatLines } = require '../js/embed-travis'
+
+styleSets =
+    34: {dir34:'val34'}
+    33: {dir33:'val33'}
+    1: {dir1_1:'val1_1',dir1_2:'val1_2'}
+    0: {dir0:'val0'}
 
 
-describe 'test of lib', ->
-    describe 'test of color parser', ->
+describe 'test of ansi2Html', ->
 
-        it 'should style up terminal color code', ->
-            content = 'Linux Version'
-            line = "#{ESC}[34m#{content}#{ESC}[0m"
-            userClass = 'userClass'
-            prefix = 'embed-travis'
+    it 'should not style up without escape code', ->
+        content = 'Linux Version'
+        line = "[34m[1m#{content}[0m"
 
-            lib.stylizeLine line, {prefix, userClass}
-                .should.exactly "<span class=\"#{prefix}-style_34m #{userClass}\">#{content}</span>"
+        ansi2Html line, styleSets
+            .should.exactly "[34m[1m#{content}[0m"
 
 
-        # it 'should style up terminal color code', ->
-        #     content = 'Linux Version'
-        #     line = "#{ESC}[34m#{ESC}[1m#{content}#{ESC}[0m"
-        #     userClass = 'userClass'
-        #     prefix = 'embed-travis'
-        #
-        #     lib.stylizeLine line, {prefix, userClass}
-        #         .should.exactly "<span class=\"#{prefix}-style_34m #{prefix}-style_1m #{userClass}\">#{content}</span>"
-        #
-        #
-        # it 'should not style up without escape code', ->
-        #     content = 'Linux Version'
-        #     line = "[34m[1m#{content}[0m"
-        #     userClass = 'userClass'
-        #     prefix = 'embed-travis'
-        #
-        #     lib.stylizeLine line, {prefix, userClass}
-        #         .should.exactly "[34m[1m#{content}[0m"
-        #
-        #
-        # it 'should style up without userClass argument', ->
-        #     content = 'Linux Version'
-        #     line = "#{ESC}[34m#{content}#{ESC}[0m"
-        #     prefix = 'embed-travis'
-        #
-        #     lib.stylizeLine line, {prefix}
-        #         .should.exactly "<span class=\"#{prefix}-style_34m\">#{content}<span class=\"#{prefix}-style_0m\"></span></span>"
-        #
-        #
-        # it 'should style up without userClass prefix and argument', ->
-        #     content = 'Linux Version'
-        #     line = "#{ESC}[34m#{content}#{ESC}[0m"
-        #
-        #     lib.stylizeLine line
-        #         .should.exactly "<span class=\"style_34m\">#{content}<span class=\"style_0m\"></span></span>"
-        #
-        #
-        # it 'should style up terminal color code', ->
-        #     content = ''#'Setting environment variables from .travis.yml'
-        #     line = "#{ESC}[33;1m#{content}#{ESC}[0m"
-        #     userClass = 'userClass'
-        #     prefix = 'embed-travis'
-        #
-        #     lib.stylizeLine line, {prefix, userClass}
-        #         .should.exactly "<span class=\"#{prefix}-style_33m #{prefix}-style_1m #{userClass}\">#{content}<span class=\"#{prefix}-style_0m #{userClass}\"></span></span>"
+    it 'should style up terminal color code', ->
+        content = 'Linux Version'
+        line = "#{ESC}[34m#{content}#{ESC}[0m"
+
+        ansi2Html line, styleSets
+            .should.exactly "<span style=\"dir34:val34\">#{content}<span style=\"dir0:val0\"></span></span>"
+
+
+    it 'should style up terminal color code', ->
+        content = 'Linux Version'
+        line = "#{ESC}[34m#{ESC}[1m#{content}#{ESC}[0m"
+
+        ansi2Html line, styleSets
+            .should.exactly "<span style=\"dir34:val34\"><span style=\"dir1_1:val1_1;dir1_2:val1_2\">#{content}<span style=\"dir0:val0\"></span></span></span>"
+
+
+    it 'should style up terminal color code', ->
+        content = 'content'
+        line = "#{ESC}[33;1m#{content}#{ESC}[0m"
+
+        ansi2Html line, styleSets
+            .should.exactly "<span style=\"dir33:val33\"><span style=\"dir1_1:val1_1;dir1_2:val1_2\">#{content}<span style=\"dir0:val0\"></span></span></span>"
+
+
+describe 'test of formatLines, parseTravis', ->
+
+    it 'should format lines', ->
+        lines = "abc\ndefghi\njklmn"
+        formatLines lines
+            .should.exactly '<p><a>1</a>abc</p><p><a>2</a>defghi</p><p><a>3</a>jklmn</p>'
+
+
+    for action in ['fold', 'time']
+        for state in ['start', 'end']
+
+            it "should detect travisCI grammer '#{action}-#{state}'", ->
+                lines = "abc\ntravis_#{action}:#{state}:label#{CR}#{ESC}[0K\njklmn"
+                formatLines lines
+                    .should.exactly "<p><a>1</a>abc</p><p data-#{action}-#{state}=\"label\"><a>2</a></p><p><a>3</a>jklmn</p>"
+
+
+            it "should parse travisCI grammer '#{action}-#{state}'", ->
+                lines = "abc\ntravis_#{action}:#{state}:label#{CR}#{ESC}[0K\njklmn"
+                formatLines lines
