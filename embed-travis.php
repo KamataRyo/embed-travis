@@ -76,8 +76,14 @@ class Travis {
 			    margin: 0;
 				position: relative;
 			}
-			.travis-log-body p:hover, .travis-log-body p.travis-active-line{
+			.travis-given-active-line {
+				background-color: #888!important;
+			}
+			.travis-log-body p:hover, .travis-log-body .travis-active-line{
 				background-color: #444!important;
+			}
+			.travis-given-active-line.travis-active-line {
+				background-color: #888!important;
 			}
 			.travis-log-body p.travis-fold-open a:before{
 				content: "\25BC";
