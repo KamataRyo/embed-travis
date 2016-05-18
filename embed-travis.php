@@ -170,20 +170,6 @@ class Travis {
 
 	public function shortcode( $p ) {
 
-		// required
-		if ( isset( $p['name'] ) && $p['name'] ) {
-			$name = $p['name'];
-		} else {
-			return is_feed() ? '' : self::get_embed_failure();
-		}
-
-		// required
-		if ( isset( $p['repo'] ) && $p['repo'] ) {
-			$repo = $p['repo'];
-		} else {
-			return is_feed() ? '' : self::get_embed_failure();
-		}
-
 		// One of two are required
 		if ( isset( $p['builds'] ) && $p['builds'] ) {
 			$type = 'builds';
@@ -208,38 +194,28 @@ class Travis {
 			$line_option = '';
 		}
 
-		$url = implode(
-			'/',
-			array(
-				self::TRAVIS_URL_PREFIX,
-				$name,
-				$repo,
-				$type,
-				$id
-			)
-		);
-
 		$html_id = "$type-$id";
 
 		// optional
 		if ( isset( $p['line'] ) && $p['line'] ) {
 			$line = $p['line'];
-			$url .= '#L' . $line;
 			$html_id .= "-L$line";
+			$line_hash = "#L$line";
 			$line_option =  " data-line=\"$line\"";
 		} else {
+			$line_hash = '';
 			$line_option = '';
 		}
 
-		$noscript = Travis::get_noscript( $url );
+		$noscript = Travis::get_noscript( "$id$line_hash" );
 
-		return is_feed() ? $noscript : "<div id=\"$html_id\" class=\"embed-travis\" data-name=\"$name\" data-repo=\"$repo\" data-$type=\"$id\"$line_option><noscript>$noscript</noscript></div>";
+		return is_feed() ? $noscript : "<div id=\"$html_id\" class=\"embed-travis\" data-$type=\"$id\"$line_option><noscript>$noscript</noscript></div>";
 	}
 
-	public static function get_noscript( $url ) {
+	public static function get_noscript( $id ) {
 		return sprintf(
-			__( 'View the build log on <a href="%s">Travis CI</a>.', 'embed-travis' ),
-			esc_url( $url )
+			__( 'View the build log on <a href="https://travis-ci.org/">https://travis-ci.org/{username}/{reponame}%s</a>.', 'embed-travis' ),
+			esc_url( $id )
 		);
 	}
 
