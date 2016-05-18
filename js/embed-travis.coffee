@@ -1,11 +1,9 @@
-ESC = String.fromCharCode '27'
 
 ansi2Html = (line, styleSets) ->
 
     ansi = /(.)\[(\d+;)?(\d+)*m/g
+    ESC = String.fromCharCode '27'
     stack = 0
-
-    replace = (text) -> text.replace ansi, callback
 
     getStyleValue = (styleSet) ->
         unless styleSet? then return ''
@@ -18,14 +16,14 @@ ansi2Html = (line, styleSets) ->
         if ESC isnt b0 then return match
         if ('' is b2) or (null is b2) then b2 = '0'
         res = ''
-        for i in [2..(arguments.length - 3)]
+        for i in [2..(arguments.length - 3)] #exclude 'offset' and 'string' arguments
             code = parseInt(arguments[i]).toString()
             if code in Object.keys styleSets
-                stack++
+                stack += 1
                 res += '<span style="' + getStyleValue(styleSets[code]) + '">'
         return res
 
-    return replace line + '</span>'.repeat stack
+    return (line.replace ansi, callback) + '</span>'.repeat stack
 
 
 
@@ -64,11 +62,13 @@ styleSets =
 
 
 
-tablify = (lines) ->
+formatLines = (lines) ->
     if typeof lines is 'string' then lines = lines.split '\n'
     html = ''
+    ESC = String.fromCharCode 27
+    CR = String.fromCharCode 13
     for line, index in lines
-        console.log "[#{index}]#{line}"
+
         attr = ''
         line = line.replace /travis_(fold|time):(start|end):(.+)/g, (match, p1, p2, p3) ->
             if p1? and p2?
@@ -76,12 +76,14 @@ tablify = (lines) ->
             return ''
 
         line = ansi2Html line, styleSets
-        line = line.replace new RegExp(String.fromCharCode(13),'g'), ''
+        line = line.replace new RegExp(CR,'g'), ''
         line = line.replace new RegExp(ESC,'g'), ''
         line = line.replace /\[\d?K/g, ''
 
         html += "<p#{attr}><a>#{index + 1}</a>#{line}</p>"
-    return "<div class=\"log-body\"><pre>#{html}</pre></div>"
+
+    return html
+
 
 
 app = ($) ->
@@ -97,52 +99,56 @@ app = ($) ->
         }
     }
         .then (lines) ->
-            $container.append tablify lines #synchronous
+            $container.append $ '<div class="travis-log-body"><pre>' + formatLines(lines) + '</pre></div>'
 
-            $('p[data-fold-start]').each ->
-                $ '<span>' + ($(this).data 'fold-start') + '</span>'
-                    .css 'position', 'absolute'
-                    .css 'display', 'block'
-                    .css 'right', '85px'
-                    .css 'top', '4px'
-                    .css 'padding', '2px 7px 2px'
-                    .css 'line-height', '10px'
-                    .css 'font-size', '10px'
-                    .css 'background-color', '#666'
-                    .css 'border-radius', '6px'
-                    .css 'color', '#bbb;'
-                    .prependTo $(this)
+            $('.travis-log-body p[data-fold-start]').each ->
+                $(this).prepend $ '<span class="travis-info travis-fold-start">' + ($(this).data 'fold-start') + '</span>'
 
-            $('p[data-time-start]').each ->
-                $p = $(this)
-                until $p.data 'time-end'
-                    $p = $p.next()
-                duration = $p.data('time-end').match(/duration=(\d*)$/)[1] / 10000000
-                $ '<span>' + Math.round(duration) / 100 + 's</span>'
-                    .css 'position', 'absolute'
-                    .css 'display', 'block'
-                    .css 'right', '12px'
-                    .css 'top', '4px'
-                    .css 'padding', '2px 7px 2px'
-                    .css 'line-height', '10px'
-                    .css 'font-size', '10px'
-                    .css 'background-color', '#666'
-                    .css 'border-radius', '6px'
-                    .css 'color', '#bbb;'
-                    .prependTo $(this)
+            $('.travis-log-body p[data-time-start]').each ->
+                $paragraph = $(this)
+                until $paragraph.data 'time-end'
+                    $paragraph = $paragraph.next()
+                duration = Math.round($paragraph.data('time-end').match(/duration=(\d*)$/)[1] / 10000000) / 100
+                $(this).prepend $ "<span class=\"travis-info travis-time-start\">#{duration}s</span>"
 
-            $('p[data-fold-start]>a').click ->
-                if $(this).parent().hasClass 'fold'
-                    $(this).parent().removeClass 'fold'
-                    $p = $(this).parent().next()
-                    until $p.data 'fold-end'
-                        $p.show()
-                        $p = $p.next()
+
+            switchFold = ->
+                close = 'travis-fold-close'
+                open = 'travis-fold-open'
+                $paragraph = $(this).parent()
+
+                # open
+                if $paragraph.hasClass close
+                    $paragraph
+                        .removeClass close
+                        .addClass open
+                    $next = $paragraph.next()
+                    until ($next.data 'fold-end') or ! $next?
+                        $next.show()
+                        $next = $next.next()
+                # close
                 else
-                    $(this).parent().addClass 'fold'
-                    $p = $(this).parent().next()
-                    until $p.data 'fold-end'
-                        $p.hide()
-                        $p = $p.next()
+                    $paragraph
+                        .removeClass open
+                        .addClass close
+                    $next = $paragraph.next()
+                    until ($next.data 'fold-end') or ! $next?
+                        $next.hide()
+                        $next = $next.next()
 
-jQuery(document).ready app
+
+            $foldHandlers = $('.travis-log-body p[data-fold-start]>a')
+            # fold at first
+            switchFold.apply $foldHandlers
+            # click to switch
+            $foldHandlers.click switchFold
+
+            $('.travis-log-body p').click ->
+                $('p').each ->
+                    $(this).removeClass 'travis-active-line'
+                $(this).addClass 'travis-active-line'
+
+if module?
+    module.exports = { ansi2Html, formatLines }
+else if window?
+    jQuery(document).ready app

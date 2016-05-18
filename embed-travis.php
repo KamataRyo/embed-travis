@@ -61,43 +61,75 @@ class Travis {
 	public function wp_head() {
 		?>
 		<style>
-			.embed-travis .log-body p {
-			    padding: 0 15px 0 55px;
-			    margin: 0;
-			    min-height: 16px;
-				position: relative;
-			}
-			.embed-travis .log-body p:hover{
-				background-color: #444!important;
-			}
-			.embed-travis .log-body a {
-    			color: #666;
-				display: inline-block;
-				padding-right: 1em;
-			    text-align: right;
-			    min-width: 40px;
-			    margin-left: -33px;
-			    text-decoration: none;
-				box-shadow:none;
-			}
-			.embed-travis .log-body pre {
-				clear: left;
-				min-height: 42px;
+			.travis-log-body pre {
+
+				margin-top: 0;
 				padding: 15px 0;
 				background-color: #222;
 				border: 1px solid #888;
-				margin-top: 0;
 				font-family: Monaco,monospace;
-				color: #f1f1f1;
 				font-size: 12px;
+				color: #f1f1f1;
 				line-height: 19px;
 				white-space: pre-wrap;
-				/*word-wrap: break-word;*/
-
 				width: 100%;
 				height: 350px;
-				overflow: scroll;
+				overflow-y: scroll;
 			}
+			.travis-log-body p {
+			    padding: 0 15px 0 55px;
+			    margin: 0;
+				position: relative;
+			}
+			.travis-log-body p:hover, .travis-log-body p.travis-active-line{
+				background-color: #444!important;
+			}
+			.travis-log-body p.travis-fold-open:before{
+				content: "▼";
+				color: #666;
+				font-size: .75em;
+				position: absolute;
+				left: 1em;
+			}
+			.travis-log-body p.travis-fold-open a, .travis-log-body p.travis-fold-close a {
+				cursor: pointer;
+			}
+			.travis-log-body p.travis-fold-close:before{
+				content: "▶︎";
+				color: #666;
+				font-size: .75em;
+				position: absolute;
+				left: 1em;
+			}
+			.travis-log-body a {
+    			color: #666;
+				display: inline-block;
+				padding-right: 1em;
+				width: auto;
+			    text-align: right;
+			    width: 40px;
+			    margin-left: -35px;
+			    text-decoration: none;
+				box-shadow:none;
+			}
+			.travis-info {
+				position: absolute;
+				display: block;
+				top: 4px;
+				padding: 2px 7px 2px;
+				line-height: 10px;
+				font-size: 10px;
+				background-color: #666;
+				border-radius: 6px;
+				color: #bbb;
+			}
+			.travis-fold-start {
+				right: 85px;
+			}
+			.travis-time-start {
+				right: 12px;
+			}
+
 		</style>
 		<?php
 	}
