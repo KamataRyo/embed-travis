@@ -29,7 +29,7 @@ bin
 .gitignore
 js/*.coffee
 tests
-phpunit.xml.dist
+phpunit.xml
 package.json
 node_modules
 gulpfile.js
