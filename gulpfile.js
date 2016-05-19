@@ -6,12 +6,12 @@ var notify     = require('gulp-notify');
 var gettext    = require('gulp-gettext');
 
 gulp.task('coffee', function(){
-    gulp.src('./js/*.coffee')
+    gulp.src(['./**/*.coffee'])
         .pipe(sourcemaps.init())
         .pipe(plumber({errorHandler: notify.onError('<%= error.message %>')}))
         .pipe(coffee({bare:false}))
         .pipe(sourcemaps.write())
-        .pipe(gulp.dest('./js/'));
+        .pipe(gulp.dest('./'));
 });
 
 gulp.task('gettext', function(){
@@ -23,5 +23,5 @@ gulp.task('gettext', function(){
 gulp.task('build',['coffee', 'gettext']);
 
 gulp.task('watch', ['build'], function(){
-    gulp.watch(['./js/*.coffee', './languages/*.po'], ['build']);
+    gulp.watch(['./**/*.coffee', './languages/*.po'], ['build']);
 });

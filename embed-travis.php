@@ -11,15 +11,18 @@ Author URI: http://biwako.io/
 $e_travis = new Travis();
 $e_travis->register();
 
+
 class Travis {
 
 	private $shotcode_tag = 'travis';
 	private $regex = '/^https:\/\/travis-ci\.org\/([a-zA-Z-_0-9]+)\/([a-zA-Z-_0-9]+)\/((builds)|(jobs))\/[1-9][0-9]*(#L[1-9][0-9]*)?$/';
 	const TRAVIS_URL_PREFIX = 'https://travis-ci.org';
 
+
 	function register() {
 		add_action( 'plugins_loaded', array( $this, 'plugins_loaded' ) );
 	}
+
 
 	public function plugins_loaded() {
 		add_action( 'wp_enqueue_scripts', array( $this, 'enquene_script' ) );
@@ -41,6 +44,7 @@ class Travis {
 		add_shortcode( $this->get_shortcode_tag(), array( $this, 'shortcode' ) );
 	}
 
+
 	public function enquene_script() {
 		wp_register_script(
 			'embed-travis-script',
@@ -52,6 +56,7 @@ class Travis {
 		wp_enqueue_script( 'jquery' );
 		wp_enqueue_script( 'embed-travis-script' );
 	}
+
 
 	public function wp_head() {
 		?>
@@ -153,13 +158,12 @@ class Travis {
 		<?php
 	}
 
-	// replace here
-	public function handler( $m, $attr, $url, $rattr ) {
-		$url    = $m[0];
-		$author = $m[1];
-		$repo   = $m[2];
-		$type   = $m[3];
 
+	public function handler( $m, $attr, $url, $rattr ) {
+		$url    = $m['0'];
+		$author = $m['1'];
+		$repo   = $m['2'];
+		$type   = $m['3'];
 		$url_parsed = parse_url( $url );
 
 		$id = explode( '/', $url_parsed['path'] )[4];
@@ -180,13 +184,14 @@ class Travis {
 		}
 
 		return $this->shortcode( array(
-			'url'  => $url,
+			'url'    => $url,
 			'author' => $author,
-			'repo' => $repo,
-			$type  => $id,
-			'line' => $line,
+			'repo'   => $repo,
+			$type    => $id,
+			'line'   => $line,
 		) );
 	}
+
 
 	public function shortcode( $p ) {
 
@@ -200,6 +205,7 @@ class Travis {
 		} else {
 			return is_feed() ? '' : self::get_embed_failure();
 		}
+
 		if ( ! self::is_positive_int( $id ) ) {
 			return is_feed() ? '' : self::get_embed_failure();
 		}
@@ -254,9 +260,11 @@ class Travis {
 			),
 			"<noscript>$noscript</noscript>"
 		); # xss ok
-		// return is_feed() ? $noscript : "<div id=\"$html_id\" class=\"embed-travis\"$url_attr data-$type=\"$id\"$line_option><noscript>$noscript</noscript></div>";
 	}
 
+	/**
+	 * create tag with attributes
+	 */
 	private static function create_tag( $tagname, $attributes, $content ) {
 		$tagname = esc_html( $tagname );
 		$attribute_strings = array( ''	 );
@@ -274,6 +282,7 @@ class Travis {
 
 		return "<$tagname" . implode( ' ', $attribute_strings ) . ">$content</$tagname>";
 	}
+
 
 
 	public static function get_noscript( $id ) {
@@ -295,13 +304,16 @@ class Travis {
 		}
 	}
 
+
 	public static function get_embed_failure() {
 		return '<div class="embed-travis-invalid"></div>';
 	}
 
+
 	public function get_travis_url_regex() {
 		return $this->regex;
 	}
+
 
 	private function get_shortcode_tag() {
 		return apply_filters( 'embed_travis_shortcode_tag', $this->shotcode_tag );
