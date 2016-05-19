@@ -35,12 +35,12 @@ after_success:
 env:
   matrix:
   - WP_VERSION=latest WP_MULTISITE=0
-  - WP_VERSION=3.9 WP_MULTISITE=0
+  - WP_VERSION=4.0 WP_MULTISITE=0
   global:
   - WP_VERSION_TO_DEPLOY: latest
   - PHP_VERSION_TO_DEPLOY: 5.6
   - WP_MULTISITE_TO_DEPLOY: 0
-  - GH_REF: github.com/KamataRyo/embed-travis.git
+  - GH_REF: github.com/KamataRyo/oembed-travis.git
   - secure: M32L2U34Kz12aTCe6bsLgbp230PF1j47ASlOIW88fRAgqdd01cndw9l0zgolFHxrRtzz/lgTfNyF7pk/smOZ1mAKZfBmo7Gk/OUhKLF705uHOZxLkuru2EW8RJAucFmDrSVyWVB/SbpCdtbrVYOvgAPlh4Cj6Wyk02UkMRoc+VhD/0XxpQv3i4Y6RNW9Weah8nYnrn+VEEOkzbMt0Pp8jwSjapx6TKWjNeAnJaH0UeWrOHYfEzpb/MJ0j2NBxDcC1T6inpYD1iyNuELtzcTBJi2Gh6LWaASBoI2qBdAw/kYj1P2CcfF57mDL45Gix49Kp30dnxaIe8fgYJ9MbG4NYtcp+VVhZCWlEHhZGtPAhtIGWpvTj7+ElidO10E/VYFiY6kwiJExQ8mDP6rwsGFTpbToTurkivxdz7ptAH70J1RkjqqkJhlBUpCNqzqTDhDqs92WsavR6R22W9G/rs3s5eu54Aad+XuRseCzLLeu7pM/ipZPS1z+fforCRTNqtOSFOYJi5JRRLJEbJqRl//etiRd11+DrF8fGq4Zics4NtwwmbPuMSJD4W16IS21wEaNhl5ifCIsNvjCz+nTD46uLbAdj7tW5vy+ShCn/ZiA/HyPjq7kZL1fMWS4QzVW3fN42NT1qlPM5rzaEy5qQQcu3H1qTl8O2roikkw9DSdQwCQ=
 
 matrix:

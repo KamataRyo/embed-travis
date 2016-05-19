@@ -1,7 +1,7 @@
 <?php
 /*
-Plugin Name: Embed Travis
-Plugin URI: https://github.com/KamataRyo/embed-travis
+Plugin Name: oEmbed Travis
+Plugin URI: https://github.com/KamataRyo/oembed-travis
 Description: Embed your build logs from Travis CI into WordPress easily.
 Author: KamataRyo
 Version: 0.0.0
@@ -30,13 +30,13 @@ class Travis {
 		add_action( 'wp_head', array( $this, 'wp_head' ) );
 
 		load_plugin_textdomain(
-			'embed-travis',
+			'oembed-travis',
 			false,
 			plugins_url( implode( array( 'languages' ), DIRECTORY_SEPARATOR ), __FILE__ )
 		);
 
 		wp_embed_register_handler(
-			'embed-travis',
+			'oembed-travis',
 			$this->get_travis_url_regex(),
 			array( $this, 'handler' )
 		);
@@ -47,14 +47,14 @@ class Travis {
 
 	public function enquene_script() {
 		wp_register_script(
-			'embed-travis-script',
-			plugins_url( implode( array( 'js', 'embed-travis.js' ), DIRECTORY_SEPARATOR ), __FILE__ ),
+			'oembed-travis-script',
+			plugins_url( implode( array( 'js', 'oembed-travis.js' ), DIRECTORY_SEPARATOR ), __FILE__ ),
 			array( 'jquery' ),
 			'',
 			true
 		);
 		wp_enqueue_script( 'jquery' );
-		wp_enqueue_script( 'embed-travis-script' );
+		wp_enqueue_script( 'oembed-travis-script' );
 	}
 
 
@@ -253,7 +253,7 @@ class Travis {
 			'div',
 			array(
 				'id' => $html_id,
-				'class' => 'embed-travis',
+				'class' => 'oembed-travis',
 				'data-url' => $url,
 				'data-author' => $author,
 				'data-repo'  => $repo,
@@ -289,7 +289,7 @@ class Travis {
 
 	public static function get_noscript( $id ) {
 		return sprintf(
-			__( 'View the build log on <a href="https://travis-ci.org/">https://travis-ci.org/{username}/{reponame}%s</a>.', 'embed-travis' ),
+			__( 'View the build log on <a href="https://travis-ci.org/">https://travis-ci.org/{username}/{reponame}%s</a>.', 'oembed-travis' ),
 			esc_url( $id )
 		);
 	}
@@ -308,7 +308,7 @@ class Travis {
 
 
 	public static function get_embed_failure() {
-		return '<div class="embed-travis-invalid"></div>';
+		return '<div class="oembed-travis-invalid"></div>';
 	}
 
 

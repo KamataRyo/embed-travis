@@ -1,5 +1,5 @@
 {
-  "name": "embed-travis",
+  "name": "oembed-travis",
   "version": "0.0.0",
   "description": "",
   "keywords": [
@@ -12,18 +12,18 @@
     "plugin",
     "WordPress"
   ],
-  "bugs": "https://github.com/KamataRyo/embed-travis-ci/issues",
+  "bugs": "https://github.com/KamataRyo/oembed-travis/issues",
   "license": "GPL-2.0",
   "author": "KamataRyo",
   "repository": {
     "type": "git",
-    "url": "https://github.com/KamataRyo/embed-travis-ci"
+    "url": "https://github.com/KamataRyo/oembed-travis"
   },
   "scripts": {
     "build": "./node_modules/gulp/bin/gulp.js build",
     "install": "npm run build",
     "generatePot": "grunt i18n",
-    "test": "./node_modules/.bin/mocha --compilers coffee:coffee-script/register ./tests/test-embed-travis.coffee"
+    "test": "./node_modules/.bin/mocha --compilers coffee:coffee-script/register ./tests/test-oembed-travis.coffee"
   },
   "devDependencies": {
     "coffee-script": "^1.10.0",

@@ -1,9 +1,9 @@
-=== Embed Travis ===
+=== oEmbed Travis ===
 Contributors: kamataryo
-Tags: url, link, oembed, visual editor, post, Travis CI
-Requires at least: 3.9
+Tags: url, link, oembed, post, Travis, Travis CI
+Requires at least: 4.0
 Tested up to: 4.5.2
-Stable tag: 1.0.0
+Stable tag: 0.0.0
 
 Embed your build logs from Travis CI into WordPress easily.
 
@@ -16,15 +16,15 @@ Embed your build logs from Travis CI into WordPress easily.
 
 = Summary =
 
-You can embed your build history from Travis CI by simply pasting the URL like below.
+You can embed your build logs from Travis CI by simply pasting the URL like below.
 
-* https://travis-ci.org/username/reponame/jobs/12345 (matrix)
-* https://travis-ci.org/username/reponame (single build)
+* https://travis-ci.org/{username}/{reponame}/jobs/12345
+* https://travis-ci.org/{username}/{reponame}/builds/12345
 
 = Support =
 
-* [GitHub](https://github.com/KamataRyo/embed-travis)
-* [Support](https://wordpress.org/support/plugin/embed-travis)
+* [GitHub](https://github.com/KamataRyo/oembed-travis)
+* [Support](https://wordpress.org/support/plugin/oembed-travis)
 
 == Installation ==
 
@@ -34,9 +34,10 @@ You can embed your build history from Travis CI by simply pasting the URL like b
 
 == Screenshots ==
 
-1. Copy URL from travis-ci.org.
-1. You simply paste URL into WordPress.
-1. It just appears!
+1. Copy the job URL from travis-ci.org.
+2. Or copy build URL from travis-ci.org, with single job.
+3. You simply paste URL into WordPress.
+4. It just appears on the post!
 
 == Changelog ==
 

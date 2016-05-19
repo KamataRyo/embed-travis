@@ -2,7 +2,7 @@ should = require 'should'
 ESC = String.fromCharCode 27
 CR = String.fromCharCode 13
 
-{ util, ansi2Html, formatLines } = require '../js/embed-travis'
+{ util, ansi2Html, formatLines } = require '../js/oembed-travis'
 
 styleSets =
     34: {dir34:'val34'}
