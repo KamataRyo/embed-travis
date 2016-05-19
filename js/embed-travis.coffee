@@ -30,7 +30,7 @@ ansi2Html = (line, styleSets) ->
                 res += '<span style="' + getStyleValue(styleSets[code]) + '">'
         return res
 
-    return (line.replace ansi, callback) + '</span>'.repeat stack
+    return (line.replace ansi, callback) + ('</span>').repeat(stack)
 
 #
 # detect travis control code

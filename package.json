@@ -23,7 +23,7 @@
     "build": "./node_modules/gulp/bin/gulp.js build",
     "install": "npm run build",
     "generatePot": "grunt i18n",
-    "test": "./node_modules/.bin/mocha ./tests/test-embed-travis.js"
+    "test": "./node_modules/.bin/mocha --compilers coffee:coffee-script/register ./tests/test-embed-travis.coffee"
   },
   "devDependencies": {
     "coffee-script": "^1.10.0",

@@ -160,13 +160,15 @@ class Travis {
 
 
 	public function handler( $m, $attr, $url, $rattr ) {
-		$url    = $m['0'];
-		$author = $m['1'];
-		$repo   = $m['2'];
-		$type   = $m['3'];
-		$url_parsed = parse_url( $url );
 
-		$id = explode( '/', $url_parsed['path'] )[4];
+		$url    = $m[0];
+		$author = $m[1];
+		$repo   = $m[2];
+		$type   = $m[3];
+
+		$url_parsed = parse_url( $url );
+		$path_parsed = explode( '/', $url_parsed['path'] );
+		$id = $path_parsed[4];
 
 		if ( isset( $url_parsed['fragment'] ) && $url_parsed['fragment'] ) {
 			$fragment = $url_parsed['fragment'];
