@@ -46,6 +46,7 @@ if [[ "master" == "$TRAVIS_BRANCH" ]]; then
 	git checkout --quiet -b latest
 	git push --force --quiet "https://${GH_TOKEN}@${GH_REF}" latest > /dev/null 2>&1
 fi
+
 if ! [[  "" == "$TRAVIS_TAG" ]]; then
 	echo "deploy as '$TRAVIS_TAG', tested on PHP=$TRAVIS_PHP_VERSION & WP=$WP_VERSION"
 	git push --force --quiet "https://${GH_TOKEN}@${GH_REF}" ":$TRAVIS_TAG" > /dev/null 2>&1
