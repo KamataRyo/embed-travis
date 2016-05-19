@@ -26,17 +26,14 @@ rm -rf .git
 echo "README.md
 bin
 .travis.yml
-.editorconfig
 .gitignore
-assets/*.coffee
+js/*.coffee
 tests
 phpunit.xml.dist
 package.json
 node_modules
 gulpfile.js
-Gruntfile.js
-bower.json
-.bowerrc" > .gitignore
+Gruntfile.js" > .gitignore
 
 git init
 git config user.name "kamataryo"
