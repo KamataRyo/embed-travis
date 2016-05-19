@@ -61,6 +61,9 @@ class Travis {
 	public function wp_head() {
 		?>
 		<style>
+			.oembed-travis {
+				margin: 1em .5em 2em;
+			}
 			.travis-log-body .travis-pre {
 				border: none;
 				margin-top: 0;

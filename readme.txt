@@ -20,6 +20,8 @@ You can embed your build logs from Travis CI by simply pasting the URL like belo
 
 * https://travis-ci.org/{username}/{reponame}/jobs/12345
 * https://travis-ci.org/{username}/{reponame}/builds/12345
+* https://travis-ci.org/{username}/{reponame}/jobs/12345#L123
+* https://travis-ci.org/{username}/{reponame}/builds/12345#L123
 
 = Support =
 

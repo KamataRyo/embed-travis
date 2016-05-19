@@ -102,11 +102,12 @@ addFoldLabel = ($container, selector) ->
 
 addTimeLabel = ($container, selector) ->
     $container.find(selector).each ->
-        $paragraph = $(this)
-        until $paragraph.data 'time-end'
-            $paragraph = $paragraph.next()
-        duration = util.nsec2sec $paragraph.data('time-end').match(/duration=(\d*)$/)[1]
-        $(this).prepend $ "<span class=\"travis-info travis-time-start\">#{duration}s</span>"
+        $n = $(this)
+        until ($n.data 'time-end') or ($n.length is 0)
+            $n = $n.next()
+        if $n.data('time-end')
+            duration = util.nsec2sec ('') + $n.data('time-end').match(/duration=(\d*)$/)[1]
+            if duration then $(this).prepend $ "<span class=\"travis-info travis-time-start\">#{duration}s</span>"
 
 
 
@@ -116,7 +117,7 @@ toggle = ($handle, bool) ->
     $handle.addClass(if bool then opened else closed)
     $n = $handle.next()
     label = $handle.data 'fold-start'
-    until (label is $n.data 'fold-end') or ($n.data 'fold-start')?
+    until (label is $n.data 'fold-end') or ($n.data 'fold-start')? or ($n.length is 0)
         $n[if bool then 'show' else 'hide']()
         $n = $n.next()
 
@@ -133,22 +134,23 @@ addFoldHandlers = ($container, selector) ->
 
 
 activateLine = ($container, selector, line) ->
-    $pre = $container.find("#{selector} pre")
+    $pre = $container.find("#{selector} .travis-pre")
     $p   = $container.find("#{selector} p").eq(line - 1)
+    if $p.length is 0 then return
     $p.addClass 'travis-given-active-line'
     if $p.css('display') is 'none'
         $pointer = $p
-        until $pointer.data 'fold-start'
+        until ($pointer.data 'fold-start') or ($pointer.length is 0)
             $pointer = $pointer.prev()
         toggle($pointer, true)
     bodyHeight = $pre.height()
-    lineTop    = $p.position().top
+    lineTop    = $p.position().top - $pre.position().top
     lineHeight = $p.height()
     d = lineTop - (bodyHeight / 2) + (lineHeight / 2)
     $pre.scrollTop d
 
 
-addFooter = ($container, arg) ->
+addFooter = ($container, selector, arg) ->
     {author, repo, line, url} = arg
     if author and repo
         content = "#{author}/#{repo}"
@@ -157,7 +159,8 @@ addFooter = ($container, arg) ->
     else
         content = 'This repository'
         badge = ''
-    if line
+    # if line is valid(not be over all line length)
+    if line and $container.find("#{selector} p").eq(line - 1).length > 0
         content = "#{content}#L#{line}"
     if url
         content = "<a href=\"#{url}\">#{content}</a>"
@@ -192,6 +195,7 @@ main = ->
                         url: "https://s3.amazonaws.com/archive.travis-ci.org/jobs/#{jobs[0].id}/log.txt"
                         headers:
                             Accept: 'text/plain'
+                        timeout: 5000
 
                     $.ajax requestOptions
                         .then (lines) ->
@@ -200,7 +204,7 @@ main = ->
                             addTimeLabel $container, '.travis-log-body p[data-time-start]'
                             addFoldHandlers $container, '.travis-log-body p[data-fold-start]>a'
                             if line then activateLine $container, '.travis-log-body', line
-                            addFooter $container, {author, repo, line, url}
+                            addFooter $container, '.travis-log-body', {author, repo, line, url}
 
 
         else
@@ -208,6 +212,7 @@ main = ->
                 url: "https://s3.amazonaws.com/archive.travis-ci.org/jobs/#{id}/log.txt"
                 headers:
                     Accept: 'text/plain'
+                timeout: 5000
 
 
             $.ajax requestOptions
@@ -217,7 +222,7 @@ main = ->
                     addTimeLabel $container, '.travis-log-body p[data-time-start]'
                     addFoldHandlers $container, '.travis-log-body p[data-fold-start]>a'
                     if line then activateLine $container, '.travis-log-body', line
-                    addFooter $container, {author, repo, line, url}
+                    addFooter $container, '.travis-log-body', {author, repo, line, url}
 
 
 
