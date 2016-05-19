@@ -26,7 +26,7 @@ msgstr ""
 
 #: oembed-travis.php:290
 msgid "View the build log on <a href=\"%s\">Travis CI</a>."
-msgstr ""
+msgstr "<a href=\"%s\">Travis CI</a>でビルドの履歴を確認して下さい."
 
 #. Plugin Name of the plugin/theme
 msgid "oEmbed Travis"
@@ -38,11 +38,11 @@ msgstr ""
 
 #. Description of the plugin/theme
 msgid "Embed your build logs from Travis CI into WordPress easily."
-msgstr ""
+msgstr "Travis CIのビルド履歴をWordPressに簡単に埋め込むためのプラグイン"
 
 #. Author of the plugin/theme
 msgid "KamataRyo"
-msgstr ""
+msgstr "鎌田 遼"
 
 #. Author URI of the plugin/theme
 msgid "http://biwako.io/"
