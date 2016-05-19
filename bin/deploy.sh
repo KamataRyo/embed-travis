@@ -43,15 +43,15 @@ git commit --quiet -m"Deploy from travis." -m"Original commit is $TRAVIS_COMMIT.
 
 if [[ "master" == "$TRAVIS_BRANCH" ]]; then
 	echo "deploy on 'latest' branch, tested on PHP=$TRAVIS_PHP_VERSION & WP=$WP_VERSION"
-	option="master:latest"
+	git checkout --quiet -b latest
+	git push --force --quiet "https://${GH_TOKEN}@${GH_REF}" latest > /dev/null 2>&1
 fi
 if ! [[  "" == "$TRAVIS_TAG" ]]; then
 	echo "deploy as '$TRAVIS_TAG', tested on PHP=$TRAVIS_PHP_VERSION & WP=$WP_VERSION"
 	git push --force --quiet "https://${GH_TOKEN}@${GH_REF}" ":$TRAVIS_TAG" > /dev/null 2>&1
 	git tag "$TRAVIS_TAG" -m"$COMMIT_MESSAGE" -m"Original commit is $TRAVIS_COMMIT."
-	option="--tags"
+	git push --force --quiet --tag "https://${GH_TOKEN}@${GH_REF}" > /dev/null 2>&1
 fi
 
-git push --force --quiet "https://${GH_TOKEN}@${GH_REF}" "$option" > /dev/null 2>&1
 
 exit 0
