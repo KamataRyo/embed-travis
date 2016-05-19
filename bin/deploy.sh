@@ -28,6 +28,7 @@ bin
 .travis.yml
 .gitignore
 js/*.coffee
+config.rb
 tests
 phpunit.xml
 package.json
