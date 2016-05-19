@@ -171,7 +171,7 @@ addFooter = ($container, arg) ->
 # main module
 #
 main = ->
-    $('.embed-travis').each ->
+    $('.oembed-travis').each ->
         $container = $ this
         url    = $container.data 'url'
         author = $container.data 'author'
