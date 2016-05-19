@@ -57,7 +57,6 @@ class Travis {
 		?>
 		<style>
 			.travis-log-body pre {
-
 				margin-top: 0;
 				padding: 15px 0;
 				background-color: #222;
@@ -82,11 +81,14 @@ class Travis {
 			.travis-log-body p:hover, .travis-log-body .travis-active-line{
 				background-color: #444!important;
 			}
+			.travis-log-body p:hover .travis-info {
+				display:none;
+			}
 			.travis-given-active-line.travis-active-line {
 				background-color: #888!important;
 			}
 			.travis-log-body p.travis-fold-open a:before{
-				content: "\25BC";
+				content: "\25B6";
 				color: #666;
 				font-size: .75em;
 				position: absolute;
@@ -96,7 +98,7 @@ class Travis {
 				cursor: pointer;
 			}
 			.travis-log-body p.travis-fold-close a:before{
-				content: "\25B6";
+				content: "\25BC";
 				color: #666;
 				font-size: .75em;
 				position: absolute;
@@ -125,12 +127,17 @@ class Travis {
 				text-align: right;
 			}
 			.travis-fold-start {
-				right: 85px;
+				right: 65px;
 			}
 			.travis-time-start {
 				right: 12px;
 			}
-
+			.travis-log-footer {
+				font: inherit;
+				opacity: .8;
+				margin-left: 1em;
+				margin-top: -1.5em;
+			}
 		</style>
 		<?php
 	}

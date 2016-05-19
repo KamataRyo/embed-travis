@@ -56,18 +56,11 @@ describe 'test of formatLines, parseTravis', ->
     it 'should format lines', ->
         lines = "abc\ndefghi\njklmn"
         formatLines lines
-            .should.exactly '<p><a>1</a>abc</p><p><a>2</a>defghi</p><p><a>3</a>jklmn</p>'
-
+            .should.exactly '<div class="travis-log-body"><pre><p><a>1</a>abc</p><p><a>2</a>defghi</p><p><a>3</a>jklmn</p></pre></div>'
 
     for action in ['fold', 'time']
         for state in ['start', 'end']
-
             it "should detect travisCI grammer '#{action}-#{state}'", ->
                 lines = "abc\ntravis_#{action}:#{state}:label#{CR}#{ESC}[0K\njklmn"
                 formatLines lines
-                    .should.exactly "<p><a>1</a>abc</p><p data-#{action}-#{state}=\"label\"><a>2</a></p><p><a>3</a>jklmn</p>"
-
-
-            it "should parse travisCI grammer '#{action}-#{state}'", ->
-                lines = "abc\ntravis_#{action}:#{state}:label#{CR}#{ESC}[0K\njklmn"
-                formatLines lines
+                    .should.exactly "<div class=\"travis-log-body\"><pre><p><a>1</a>abc</p><p data-#{action}-#{state}=\"label\"><a>2</a></p><p><a>3</a>jklmn</p></pre></div>"

@@ -4,7 +4,6 @@
 util =
     nsec2sec: (nsec) -> Math.round( nsec / 10000000) / 100
 
-
 #
 # terminal codes to Html
 #
@@ -55,7 +54,7 @@ formatLines = (lines) ->
 
         html += "<p#{attr}><a>#{index + 1}</a>#{line}</p>"
 
-    return html
+    return "<div class=\"travis-log-body\"><pre>#{html}</pre></div>"
 
 #
 # define terminal code styles
@@ -92,92 +91,109 @@ styleSets =
     47: { 'background-color': '#f1f1f1' } # white
     49: { 'background-color': '#222' } # default
 
+
+
+if window? then $ = jQuery
+
+addFoldLabel = ($container, selector) ->
+    $container.find(selector).each ->
+        $(this).prepend $ '<span class="travis-info travis-fold-start">' + ($(this).data 'fold-start') + '</span>'
+
+
+addTimeLabel = ($container, selector) ->
+    $container.find(selector).each ->
+        $paragraph = $(this)
+        until $paragraph.data 'time-end'
+            $paragraph = $paragraph.next()
+        duration = util.nsec2sec $paragraph.data('time-end').match(/duration=(\d*)$/)[1]
+        $(this).prepend $ "<span class=\"travis-info travis-time-start\">#{duration}s</span>"
+
+
+
+toggle = ($handle, bool) ->
+    [opened, closed] = ['travis-fold-close', 'travis-fold-open']
+    $handle.removeClass(if bool then closed else opened)
+    $handle.addClass(if bool then opened else closed)
+    $n = $handle.next()
+    label = $handle.data 'fold-start'
+    until (label is $n.data 'fold-end') or ($n.data 'fold-start')?
+        $n[if bool then 'show' else 'hide']()
+        $n = $n.next()
+
+
+addFoldHandlers = ($container, selector) ->
+    [opened, closed] = ['travis-fold-close', 'travis-fold-open']
+    $container.find(selector)
+        .addClass closed
+        .each ->
+            toggle($(this).parent(), false)
+            $(this).click ->
+                    $p = $(this).parent()
+                    if $p.hasClass opened then toggle($p, false) else toggle($p, true)
+
+
+activateLine = ($container, selector, line) ->
+    $pre = $container.find("#{selector} pre")
+    $p   = $container.find("#{selector} p").eq(line - 1)
+    $p.addClass 'travis-given-active-line'
+    if $p.css('display') is 'none'
+        $pointer = $p
+        until $pointer.data 'fold-start'
+            $pointer = $pointer.prev()
+        toggle($pointer, true)
+    bodyHeight = $pre.height()
+    lineTop    = $p.position().top
+    lineHeight = $p.height()
+    d = lineTop - (bodyHeight / 2) + (lineHeight / 2)
+    $pre.scrollTop d
+
+
+addFooter = ($container, arg) ->
+    {author, repo, line, url} = arg
+    if author and repo
+        content = "#{author}/#{repo}"
+        # need to be inject branch information to show badge
+        # badge = "<img class=\"travis-badge\" src=\"https://api.travis-ci.org/#{author}/#{repo}.svg?branch=#{branch}\" alt=\"state\" />"
+    else
+        content = 'This repository'
+        badge = ''
+    if line
+        content = "#{content}#L#{line}"
+    if url
+        content = "<a href=\"#{url}\">#{content}</a>"
+    $container.after $ """
+    <div class=\"travis-log-footer\"><p><small>
+        #{content} build with <a href=\"https://travis-ci.org\">Travis CI</a>.
+    </small></p></div>
+    """
+
 #
 # main module
 #
 main = ($) ->
-    # # var sets
-    #   type(builds or jobs)
-    #     => repo_slug, number, state, started_at, finished_atを特定
     $('.embed-travis').each ->
         $container = $ this
-        url = $container.data 'url'
+        url    = $container.data 'url'
         author = $container.data 'author'
-        repo = $container.data 'repo'
-        type = if $container.data 'builds' then 'builds' else 'jobs'
-        id = $container.data type
-        line = $container.data 'line'
+        repo   = $container.data 'repo'
+        type   = if $container.data 'builds' then 'builds' else 'jobs'
+        id     = $container.data type
+        line   = $container.data 'line'
 
-        $.ajax {
+        requestOptions =
             url: "https://s3.amazonaws.com/archive.travis-ci.org/#{type}/#{id}/log.txt"
-            headers: {
+            headers:
                 Accept: 'text/plain'
-            }
-        }
+
+
+        $.ajax requestOptions
             .then (lines) ->
-                $container.append $ '<div class="travis-log-body"><pre>' + formatLines(lines) + '</pre></div>'
-
-                $container.find('.travis-log-body p[data-time-start]').each ->
-                    $paragraph = $(this)
-                    until $paragraph.data 'time-end'
-                        $paragraph = $paragraph.next()
-
-                    duration = util.nsec2sec $paragraph.data('time-end').match(/duration=(\d*)$/)[1]
-                    $(this).prepend $ "<span class=\"travis-info travis-time-start\">#{duration}s</span>"
-
-
-                $container.find('.travis-log-body p[data-fold-start]').each ->
-                    $(this).prepend $ '<span class="travis-info travis-fold-start">' + ($(this).data 'fold-start') + '</span>'
-
-
-                switchFold = ->
-                    close = 'travis-fold-close'
-                    open = 'travis-fold-open'
-                    $paragraph = $(this).parent()
-                    label = $paragraph.data 'fold-start'
-
-                    # open
-                    if $paragraph.hasClass close
-                        $paragraph
-                            .removeClass close
-                            .addClass open
-                        $next = $paragraph.next()
-                        until (label is $next.data 'fold-end') or ($next.data 'fold-start')?
-                            $next.show()
-                            $next = $next.next()
-
-                    # close
-                    else
-                        $paragraph
-                            .removeClass open
-                            .addClass close
-                        $next = $paragraph.next()
-                        until (label is $next.data 'fold-end') or ($next.data 'fold-start')?
-                            $next.hide()
-                            $next = $next.next()
-                    $paragraph.show()
-
-
-                $foldHandlers = $container.find '.travis-log-body p[data-fold-start]>a'
-                # fold at first
-                switchFold.apply $foldHandlers
-                # click to switch
-                $foldHandlers.click switchFold
-
-                if line
-                    # scroll to line to activate
-                    ho = $container.find('.travis-log-body pre').height()
-                    hi = $container.find('.travis-log-body p').eq(line - 1).position().top
-                    d = hi - ho / 2
-                    $container.find('.travis-log-body pre').scrollTop d
-                    # activate given line
-                    $container.find('.travis-log-body p').eq(line - 1)
-                        .addClass 'travis-given-active-line'
-                # click to activation
-                $container.find('.travis-log-body p').click ->
-                    $container.find('p').each ->
-                        $(this).removeClass 'travis-active-line'
-                    $(this).addClass 'travis-active-line'
+                $container.append $ formatLines(lines)
+                addFoldLabel $container, '.travis-log-body p[data-fold-start]'
+                addTimeLabel $container, '.travis-log-body p[data-time-start]'
+                addFoldHandlers $container, '.travis-log-body p[data-fold-start]>a'
+                if line then activateLine $container, '.travis-log-body', line
+                addFooter $container, {author, repo, line, url}
 
 #
 # engine handling
@@ -187,4 +203,4 @@ if module?
     module.exports = { util, ansi2Html, formatLines }
 else if window?
     # exec on browser
-    jQuery(document).ready main
+    $(document).ready main
