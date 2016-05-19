@@ -3,7 +3,7 @@ Contributors: miyauchi, kamataryo, mt8biz
 Tags: url, link, oembed, post, Travis, Travis CI
 Requires at least: 4.0
 Tested up to: 4.5.2
-Stable tag: 0.1.0
+Stable tag: 0.2.0
 
 Embed your build logs from Travis CI into WordPress easily.
 

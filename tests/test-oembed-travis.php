@@ -103,7 +103,7 @@ class EmbedTravis_Test extends WP_UnitTestCase {
 			'post_content' => $url,
 		) );
 
-		$this->expectOutputString('<div id="builds-126275217" class="oembed-travis" data-url="' . $url . '" data-author="KamataRyo" data-repo="nationalpark-map" data-builds="126275217"><span class="travis-title">{{embed Travis CI build log}}</span><noscript>' . $noscript . '</noscript></div>'."\n");
+		$this->expectOutputString('<div id="builds-126275217" class="oembed-travis" data-url="' . $url . '" data-author="KamataRyo" data-repo="nationalpark-map" data-builds="126275217"><span class="travis-label-on-MCE">{{embed Travis CI build log}}</span><noscript>' . $noscript . '</noscript></div>'."\n");
 
 		the_content();
 	}
@@ -121,7 +121,7 @@ class EmbedTravis_Test extends WP_UnitTestCase {
 			'post_content' => $url,
 		) );
 
-		$this->expectOutputString('<div id="jobs-130318268" class="oembed-travis" data-url="' . $url . '" data-author="KamataRyo" data-repo="inherit-theme-mods" data-jobs="130318268"><span class="travis-title">{{embed Travis CI build log}}</span><noscript>' . $noscript . '</noscript></div>'."\n");
+		$this->expectOutputString('<div id="jobs-130318268" class="oembed-travis" data-url="' . $url . '" data-author="KamataRyo" data-repo="inherit-theme-mods" data-jobs="130318268"><span class="travis-label-on-MCE">{{embed Travis CI build log}}</span><noscript>' . $noscript . '</noscript></div>'."\n");
 
 		the_content();
 	}
@@ -139,7 +139,7 @@ class EmbedTravis_Test extends WP_UnitTestCase {
 			'post_content' => $url,
 		) );
 
-		$this->expectOutputString('<div id="builds-126275217-L120" class="oembed-travis" data-url="' . $url . '" data-author="KamataRyo" data-repo="nationalpark-map" data-builds="126275217" data-line="120"><span class="travis-title">{{embed Travis CI build log}}</span><noscript>' . $noscript . '</noscript></div>'."\n");
+		$this->expectOutputString('<div id="builds-126275217-L120" class="oembed-travis" data-url="' . $url . '" data-author="KamataRyo" data-repo="nationalpark-map" data-builds="126275217" data-line="120"><span class="travis-label-on-MCE">{{embed Travis CI build log}}</span><noscript>' . $noscript . '</noscript></div>'."\n");
 
 		the_content();
 	}
@@ -157,7 +157,7 @@ class EmbedTravis_Test extends WP_UnitTestCase {
 			'post_content' => $url,
 		) );
 
-		$this->expectOutputString('<div id="jobs-130318268-L145" class="oembed-travis" data-url="' . $url . '" data-author="KamataRyo" data-repo="inherit-theme-mods" data-jobs="130318268" data-line="145"><span class="travis-title">{{embed Travis CI build log}}</span><noscript>' . $noscript . '</noscript></div>'."\n");
+		$this->expectOutputString('<div id="jobs-130318268-L145" class="oembed-travis" data-url="' . $url . '" data-author="KamataRyo" data-repo="inherit-theme-mods" data-jobs="130318268" data-line="145"><span class="travis-label-on-MCE">{{embed Travis CI build log}}</span><noscript>' . $noscript . '</noscript></div>'."\n");
 
 		the_content();
 	}

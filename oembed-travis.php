@@ -4,7 +4,7 @@ Plugin Name: oEmbed Travis
 Plugin URI: https://github.com/KamataRyo/oembed-travis
 Description: Embed your build logs from Travis CI into WordPress easily.
 Author: KamataRyo
-Version: 0.0.0
+Version: 0.1.1
 Author URI: http://biwako.io/
 */
 
@@ -77,7 +77,7 @@ class Travis {
 				height: 350px;
 				overflow-y: scroll;
 			}
-			.travis-title {
+			.travis-label-on-MCE {
 				display: none;
 			}
 			.travis-log-body p {
@@ -158,7 +158,6 @@ class Travis {
 			.travis-log-footer a {
 				color: #FFFFB6;
 			}
-
 		</style>
 		<?php
 	}
@@ -202,6 +201,7 @@ class Travis {
 
 	public function shortcode( $p ) {
 
+		// parse required attributes.
 		// One of two are required
 		if ( isset( $p['builds'] ) && $p['builds'] ) {
 			$type = 'builds';
@@ -218,7 +218,7 @@ class Travis {
 		}
 		$html_id = "$type-$id";
 
-		// optionals
+		// parse optional attributes
 		$url = NULL;
 		if ( isset( $p['url'] ) && $p['url'] ) {
 			$url = $p['url'];
@@ -258,7 +258,7 @@ class Travis {
 				"data-$type" => $id,
 				'data-line' => $line,
 			),
-			"<span class=\"travis-title\">{{embed Travis CI build log}}</span><noscript>$noscript</noscript>"
+			"<span class=\"travis-label-on-MCE\">{{embed Travis CI build log}}</span><noscript>$noscript</noscript>"
 		); # xss ok
 	}
 
@@ -291,6 +291,7 @@ class Travis {
 			esc_url( $url )
 		);
 	}
+
 
 	private static function is_positive_int( $arg ) {
 		if (! is_numeric( $arg ) ) {

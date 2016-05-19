@@ -1,12 +1,8 @@
-#
 # some utilities
-#
 util =
     nsec2sec: (nsec) -> Math.round( nsec / 10000000) / 100
 
-#
 # terminal codes to Html
-#
 ansi2Html = (line, styleSets) ->
     ansi = /(.)\[(\d+;)?(\d+)*m/g
     ESC = String.fromCharCode '27'
@@ -32,9 +28,7 @@ ansi2Html = (line, styleSets) ->
 
     return (line.replace ansi, callback) + stack
 
-#
-# detect travis control code
-#
+# detect and process travis control code
 formatLines = (lines) ->
     if typeof lines is 'string' then lines = lines.split '\n'
     html = ''
@@ -56,9 +50,8 @@ formatLines = (lines) ->
 
     return "<div class=\"travis-log-body\"><div class=\"travis-pre\">#{html}</div></div>"
 
-#
+
 # define terminal code styles
-#
 styleSets =
     0:  { 'font-weight': 'normal', 'font-style': 'normal', 'text-decoration': 'none','background-color': '#222', color: '#f1f1f1' }
     1:  { 'font-weight': 'bold' }
@@ -92,8 +85,8 @@ styleSets =
     49: { 'background-color': '#222' } # default
 
 
-
 if window? then $ = jQuery
+
 
 addFoldLabel = ($container, selector) ->
     $container.find(selector).each ->
@@ -108,7 +101,6 @@ addTimeLabel = ($container, selector) ->
         if $n.data('time-end')
             duration = util.nsec2sec ('') + $n.data('time-end').match(/duration=(\d*)$/)[1]
             if duration then $(this).prepend $ "<span class=\"travis-info travis-time-start\">#{duration}s</span>"
-
 
 
 toggle = ($handle, bool) ->
@@ -154,12 +146,12 @@ addFooter = ($container, selector, arg) ->
     {author, repo, line, url} = arg
     if author and repo
         content = "#{author}/#{repo}"
-        # need to be inject branch information to show badge
+        # need to inject branch information to show badge
         # badge = "<img class=\"travis-badge\" src=\"https://api.travis-ci.org/#{author}/#{repo}.svg?branch=#{branch}\" alt=\"state\" />"
     else
         content = 'This repository'
         badge = ''
-    # if line is valid(not be over all line length)
+    # check if line is valid(not be over all line length)
     if line and $container.find("#{selector} p").eq(line - 1).length > 0
         content = "#{content}#L#{line}"
     if url
@@ -170,9 +162,8 @@ addFooter = ($container, selector, arg) ->
     </h2></div>
     """
 
-#
+
 # main module
-#
 main = ->
     $('.oembed-travis').each ->
         $container = $ this
@@ -227,9 +218,8 @@ main = ->
 
 
 
-#
+
 # engine handling
-#
 if module?
     # export for test
     module.exports = { util, ansi2Html, formatLines }
