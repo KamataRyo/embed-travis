@@ -26,7 +26,6 @@ class Travis {
 
 	public function plugins_loaded() {
 		add_action( 'wp_enqueue_scripts', array( $this, 'enquene_script' ) );
-		add_action( 'admin_enqueue_scripts', array( $this, 'enquene_script' ) );
 		add_action( 'wp_head', array( $this, 'wp_head' ) );
 
 		load_plugin_textdomain(
@@ -77,6 +76,9 @@ class Travis {
 				width: 100%;
 				height: 350px;
 				overflow-y: scroll;
+			}
+			.travis-title {
+				display: none;
 			}
 			.travis-log-body p {
 			    padding: 0 15px 0 55px;
@@ -141,11 +143,11 @@ class Travis {
 				right: 12px;
 			}
 			.travis-log-footer {
-				padding: 6px 15px 6px;
+				padding: 8px 15px 6px;
 				background-color: #444;
 				margin: -1px 0 0 0;
 			}
-			h2.travis-title {
+			h2.travis-footer-text {
 				font-family: "Source Sans Pro",Helvetica,sans-serif;
 				font-weight: normal;
 				font-size: 14px;
@@ -233,6 +235,7 @@ class Travis {
 		}
 
 		$line = NULL;
+		$line_hash = '';
 		if ( isset( $p['line'] ) && $p['line'] ) {
 			$line = $p['line'];
 			if ( ! self::is_positive_int( $line ) ) {
@@ -242,15 +245,7 @@ class Travis {
 			$line_hash = "#L$line";
 		}
 
-
-		if ( isset( $p['line'] ) && $p['line'] ) {
-			$line = $p['line'];
-		} else {
-			$line_hash = '';
-			$line_option = '';
-		}
-
-		$noscript = Travis::get_noscript( "$id$line_hash" );
+		$noscript = Travis::get_noscript( $url );
 
 		return is_feed() ? $noscript : Travis::create_tag(
 			'div',
@@ -263,7 +258,7 @@ class Travis {
 				"data-$type" => $id,
 				'data-line' => $line,
 			),
-			"<noscript>$noscript</noscript>"
+			"<span class=\"travis-title\">{{embed Travis CI build log}}</span><noscript>$noscript</noscript>"
 		); # xss ok
 	}
 
@@ -290,10 +285,10 @@ class Travis {
 
 
 
-	public static function get_noscript( $id ) {
+	public static function get_noscript( $url ) {
 		return sprintf(
-			__( 'View the build log on <a href="https://travis-ci.org/">https://travis-ci.org/{username}/{reponame}%s</a>.', 'oembed-travis' ),
-			esc_url( $id )
+			__( 'View the build log on <a href="%s">Travis CI</a>.', 'oembed-travis' ),
+			esc_url( $url )
 		);
 	}
 
@@ -325,5 +320,6 @@ class Travis {
 	}
 
 }
+
 
 // EOF

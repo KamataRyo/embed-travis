@@ -50,7 +50,7 @@ formatLines = (lines) ->
         line = ansi2Html line, styleSets
         line = line.replace new RegExp(CR,'g'), ''
         line = line.replace new RegExp(ESC,'g'), ''
-        line = line.replace /\[\d?K/g, ''
+        line = line.replace /\[\d?[KG]/g, '' # maybe this erases non-escaped line
 
         html += "<p#{attr}><a>#{index + 1}</a>#{line}</p>"
 
@@ -165,8 +165,8 @@ addFooter = ($container, selector, arg) ->
     if url
         content = "<a href=\"#{url}\">#{content}</a>"
     $container.append $ """
-    <div class=\"travis-log-footer\"><h2 class="travis-title">
-        #{content} build with <a href=\"https://travis-ci.org\">Travis CI</a>.
+    <div class=\"travis-log-footer\"><h2 class="travis-footer-text">
+        #{content} built with <a href=\"https://travis-ci.org\">Travis CI</a>.
     </h2></div>
     """
 
@@ -176,6 +176,7 @@ addFooter = ($container, selector, arg) ->
 main = ->
     $('.oembed-travis').each ->
         $container = $ this
+        if $container.children > 0 then return
         url    = $container.data 'url'
         author = $container.data 'author'
         repo   = $container.data 'repo'
