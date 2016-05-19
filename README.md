@@ -15,3 +15,7 @@ $ phpunit
 $ npm install
 $ npm test
 ```
+
+## Acknowledgments
+
+This plugin is based on [oEmbed Gist](https://wordpress.org/plugins/oembed-gist/) authored by [@miya0001](https://github.com/miya0001). I would like to express my gratitude and appreciation to the great plugin and its developmental environment.
