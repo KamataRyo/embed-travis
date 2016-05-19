@@ -10,7 +10,7 @@ util =
 ansi2Html = (line, styleSets) ->
     ansi = /(.)\[(\d+;)?(\d+)*m/g
     ESC = String.fromCharCode '27'
-    stack = 0
+    stack = ''
 
     getStyleValue = (styleSet) ->
         unless styleSet? then return ''
@@ -26,11 +26,11 @@ ansi2Html = (line, styleSets) ->
         for i in [2..(arguments.length - 3)] #exclude 'offset' and 'string' arguments
             code = parseInt(arguments[i]).toString()
             if code in Object.keys styleSets
-                stack += 1
+                stack += '</span>'
                 res += '<span style="' + getStyleValue(styleSets[code]) + '">'
         return res
 
-    return (line.replace ansi, callback) + ('</span>').repeat(stack)
+    return (line.replace ansi, callback) + stack
 
 #
 # detect travis control code
