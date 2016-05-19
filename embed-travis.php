@@ -56,11 +56,11 @@ class Travis {
 	public function wp_head() {
 		?>
 		<style>
-			.travis-log-body pre {
+			.travis-log-body .travis-pre {
+				border: none;
 				margin-top: 0;
 				padding: 15px 0;
 				background-color: #222;
-				border: 1px solid #888;
 				font-family: Monaco,monospace;
 				font-size: 12px;
 				color: #f1f1f1;
@@ -133,11 +133,22 @@ class Travis {
 				right: 12px;
 			}
 			.travis-log-footer {
-				font: inherit;
-				opacity: .8;
-				margin-left: 1em;
-				margin-top: -1.5em;
+				padding: 6px 15px 6px;
+				background-color: #444;
+				margin: -1px 0 0 0;
 			}
+			h2.travis-title {
+				font-family: "Source Sans Pro",Helvetica,sans-serif;
+				font-weight: normal;
+				font-size: 14px;
+				text-align:right;
+				color: #f1f1f1;
+				margin: 0;
+			}
+			.travis-log-footer a {
+				color: #FFFFB6;
+			}
+
 		</style>
 		<?php
 	}

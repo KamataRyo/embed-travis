@@ -54,7 +54,7 @@ formatLines = (lines) ->
 
         html += "<p#{attr}><a>#{index + 1}</a>#{line}</p>"
 
-    return "<div class=\"travis-log-body\"><pre>#{html}</pre></div>"
+    return "<div class=\"travis-log-body\"><div class=\"travis-pre\">#{html}</div></div>"
 
 #
 # define terminal code styles
@@ -161,16 +161,16 @@ addFooter = ($container, arg) ->
         content = "#{content}#L#{line}"
     if url
         content = "<a href=\"#{url}\">#{content}</a>"
-    $container.after $ """
-    <div class=\"travis-log-footer\"><p><small>
+    $container.append $ """
+    <div class=\"travis-log-footer\"><h2 class="travis-title">
         #{content} build with <a href=\"https://travis-ci.org\">Travis CI</a>.
-    </small></p></div>
+    </h2></div>
     """
 
 #
 # main module
 #
-main = ($) ->
+main = ->
     $('.embed-travis').each ->
         $container = $ this
         url    = $container.data 'url'
@@ -180,20 +180,46 @@ main = ($) ->
         id     = $container.data type
         line   = $container.data 'line'
 
-        requestOptions =
-            url: "https://s3.amazonaws.com/archive.travis-ci.org/#{type}/#{id}/log.txt"
-            headers:
-                Accept: 'text/plain'
+        if type is 'builds'
+            requestOptions =
+                url: "https://api.travis-ci.org/builds/#{id}"
+                headers:
+                    Accept: 'application/vnd.travis-ci.2+json'
+
+            $.ajax requestOptions
+                .then ({jobs}) ->
+                    requestOptions =
+                        url: "https://s3.amazonaws.com/archive.travis-ci.org/jobs/#{jobs[0].id}/log.txt"
+                        headers:
+                            Accept: 'text/plain'
+
+                    $.ajax requestOptions
+                        .then (lines) ->
+                            $container.append $ formatLines(lines)
+                            addFoldLabel $container, '.travis-log-body p[data-fold-start]'
+                            addTimeLabel $container, '.travis-log-body p[data-time-start]'
+                            addFoldHandlers $container, '.travis-log-body p[data-fold-start]>a'
+                            if line then activateLine $container, '.travis-log-body', line
+                            addFooter $container, {author, repo, line, url}
 
 
-        $.ajax requestOptions
-            .then (lines) ->
-                $container.append $ formatLines(lines)
-                addFoldLabel $container, '.travis-log-body p[data-fold-start]'
-                addTimeLabel $container, '.travis-log-body p[data-time-start]'
-                addFoldHandlers $container, '.travis-log-body p[data-fold-start]>a'
-                if line then activateLine $container, '.travis-log-body', line
-                addFooter $container, {author, repo, line, url}
+        else
+            requestOptions =
+                url: "https://s3.amazonaws.com/archive.travis-ci.org/jobs/#{id}/log.txt"
+                headers:
+                    Accept: 'text/plain'
+
+
+            $.ajax requestOptions
+                .then (lines) ->
+                    $container.append $ formatLines(lines)
+                    addFoldLabel $container, '.travis-log-body p[data-fold-start]'
+                    addTimeLabel $container, '.travis-log-body p[data-time-start]'
+                    addFoldHandlers $container, '.travis-log-body p[data-fold-start]>a'
+                    if line then activateLine $container, '.travis-log-body', line
+                    addFooter $container, {author, repo, line, url}
+
+
 
 #
 # engine handling
