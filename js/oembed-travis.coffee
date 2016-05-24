@@ -30,17 +30,20 @@ ansi2Html = (line, styleSets) ->
 
 # detect and process travis control code
 formatLines = (lines) ->
-    if typeof lines is 'string' then lines = lines.split '\n'
-    html = ''
     ESC = String.fromCharCode 27
     CR = String.fromCharCode 13
+    LF = String.fromCharCode 10
+    lines = lines.replace CR + LF, CR
+    lines = lines.split "\n"
+
+    html = ''
     for line, index in lines
+        console.log "#{index}: #{escape(line)}"
         attr = ''
         line = line.replace /travis_(fold|time):(start|end):(.+)/g, (match, p1, p2, p3) ->
             if p1? and p2?
                 attr += " data-#{p1}-#{p2}=\"#{p3}\""
             return ''
-
         line = ansi2Html line, styleSets
         line = line.replace new RegExp(CR,'g'), ''
         line = line.replace new RegExp(ESC,'g'), ''
@@ -191,7 +194,7 @@ main = ->
 
                     $.ajax requestOptions
                         .then (lines) ->
-                            $container.append $ formatLines(lines)
+                            $container.append $ formatLines lines
                             addFoldLabel $container, '.travis-log-body p[data-fold-start]'
                             addTimeLabel $container, '.travis-log-body p[data-time-start]'
                             addFoldHandlers $container, '.travis-log-body p[data-fold-start]>a'
