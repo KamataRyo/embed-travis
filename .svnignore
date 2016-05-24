@@ -1,0 +1,16 @@
+.DS_Store
+npm-debug.log
+.sass-cache
+README.md
+bin
+.travis.yml
+.gitignore
+.svnignore
+js/*.coffee
+config.rb
+tests
+phpunit.xml
+package.json
+node_modules
+gulpfile.js
+Gruntfile.js
