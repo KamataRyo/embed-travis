@@ -1,7 +1,7 @@
 # oEmbed Travis
 
 [![Build Status](https://travis-ci.org/KamataRyo/oembed-travis.svg)](https://travis-ci.org/KamataRyo/oembed-travis)
-[![](https://img.shields.io/wordpress/v/oembed-travis.svg)](https://wordpress.org/plugins/oembed-travis/)
+[![Wordpress official repository](https://img.shields.io/wordpress/v/oembed-travis.svg)](https://wordpress.org/plugins/oembed-travis/)
 
 * https://wordpress.org/plugins/oembed-travis/
 
@@ -15,6 +15,20 @@ $ phpunit
 $ npm install
 $ npm test
 ```
+
+## Screen shots
+
+1. copy jobs url
+![copy job url](assets/screenshot-1.png)
+
+1. or copy build urls
+![copy build url](assets/screenshot-2.png)
+
+1. paste on editor
+![paste on editor](assets/screenshot-3.png)
+
+1. build log appears in your post!
+![build log appearance on post](assets/screenshot-4.png)
 
 ## Acknowledgments
 

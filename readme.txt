@@ -1,5 +1,5 @@
 === oEmbed Travis ===
-Contributors: miyauchi, kamataryo, mt8biz
+Contributors: kamataryo
 Tags: url, link, embed, post, Travis, Travis CI
 Requires at least: 4.0
 Tested up to: 4.5.2
