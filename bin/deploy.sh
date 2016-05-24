@@ -41,34 +41,13 @@ if [[ "master" == "$TRAVIS_BRANCH" ]]; then
 fi
 
 if ! [[  "" == "$TRAVIS_TAG" ]]; then
-
 	echo "Deleting remote not compiled tag '$TRAVIS_TAG'.."
 	git push --force --quiet "https://${GH_TOKEN}@${GH_REF}" ":$TRAVIS_TAG" > /dev/null 2>&1
-
 	echo "Making new tag with compiled files..."
 	git tag "$TRAVIS_TAG" -m "$COMMIT_MESSAGE" -m "Original commit is $TRAVIS_COMMIT."
-
 	echo "Pushing new tag '$TRAVIS_TAG'..."
 	git push --force --quiet --tag "https://${GH_TOKEN}@${GH_REF}" > /dev/null 2>&1
-
 	echo "deployed as '$TRAVIS_TAG', tested on PHP=$TRAVIS_PHP_VERSION & WP=$WP_VERSION"
-
-	echo "Starting to release on WordPress official plugin repository ..."
-	GIT_DIR=$(pwd)
-	SVN_DIR=~/svn_dir_to_release
-	mkdir $SVN_DIR
-	cd $SVN_DIR
-
-	echo "Checking out from '$SVN_REPO' ..."
-	svn co --quiet "$SVN_REPO" "$SVN_DIR"
-
-	echo "Cloning package to release '$GH_REF' to '$SVN_REPO' ..."
-	git clone --quiet --depth=1 -b "$TRAVIS_TAG" "$GH_REF" "$SVN_DIR/trunk"
-	mv "$SVN_DIR/trunk/assets/*" "$SVN_DIR/assets/*"
-	svn cp trunk "$SVN_DIR/tags/$TRAVIS_TAG"
-	svn add --quiet "$SVN_DIR/trunk/*"
-	svn add --quiet "$SVN_DIR/assets/*"
-	svn ci --quiet -m "$COMMIT_MESSAGE"
 fi
 
 exit 0
