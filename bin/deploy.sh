@@ -35,8 +35,6 @@ git add .
 git commit --quiet -m "Deploy from travis." -m "Original commit is $TRAVIS_COMMIT."
 
 if [[ "master" == "$TRAVIS_BRANCH" ]]; then
-	echo "checking out as 'latest' ..."
-	git checkout --quiet -b latest
 	echo "enforcing pushing to 'latest'.."
 	git push --force --quiet "https://${GH_TOKEN}@${GH_REF}" master:latest > /dev/null 2>&1
 	echo "deployed on 'latest' branch, which is tested on PHP=$TRAVIS_PHP_VERSION & WP=$WP_VERSION"
