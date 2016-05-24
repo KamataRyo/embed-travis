@@ -37,8 +37,12 @@ msgid "https://github.com/KamataRyo/oembed-travis"
 msgstr ""
 
 #. Description of the plugin/theme
-msgid "Embed your build logs from Travis CI into WordPress easily."
-msgstr "Travis CIのビルド履歴をWordPressに簡単に埋め込むためのプラグイン"
+msgid ""
+"Embed your build logs on Travis CI into WordPress easily. Discuss on your "
+"history:)"
+msgstr ""
+"このプラグインを使うと、Travis CIでのビルドログをWordPressに簡単に埋め込むことができます。"
+"ビルドログを元にWordPress上でディスカッションを行うことができます。"
 
 #. Author of the plugin/theme
 msgid "KamataRyo"

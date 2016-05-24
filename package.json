@@ -1,7 +1,7 @@
 {
   "name": "oembed-travis",
-  "version": "0.2.2",
-  "description": "",
+  "version": "0.2.3",
+  "description": "Embed your build logs on Travis CI into WordPress easily. Discuss on your history:)",
   "keywords": [
     "url",
     "link",

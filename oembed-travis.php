@@ -2,9 +2,9 @@
 /*
 Plugin Name: oEmbed Travis
 Plugin URI: https://github.com/KamataRyo/oembed-travis
-Description: Embed your build logs on Travis CI into WordPress easily.
+Description: Embed your build logs on Travis CI into WordPress easily. Discuss on your history:)
 Author: KamataRyo
-Version: 0.2.2
+Version: 0.2.3
 Author URI: http://biwako.io/
 */
 

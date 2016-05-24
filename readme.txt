@@ -1,27 +1,26 @@
 === oEmbed Travis ===
 Contributors: miyauchi, kamataryo, mt8biz
-Tags: url, link, oembed, post, Travis, Travis CI
+Tags: url, link, embed, post, Travis, Travis CI
 Requires at least: 4.0
 Tested up to: 4.5.2
-Stable tag: 0.2.1
+Stable tag: 0.2.3
 
-Embed your build logs on Travis CI into WordPress easily.
+Embed your build logs on Travis CI into WordPress easily. Discuss on your history:)
 
 == Description ==
 
 * Embed your build logs on Travis CI into WordPress easily.
 * You simply have to paste the URL of your Travis CI build logs.
 * You can embed a specific build history of the Travis CI.
-* You can embed an individual jobs that is part of a branch.
 
 = Summary =
 
 You can embed your build logs from Travis CI by simply pasting the URL like below.
 
-* https://travis-ci.org/{username}/{reponame}/jobs/12345
-* https://travis-ci.org/{username}/{reponame}/builds/12345
-* https://travis-ci.org/{username}/{reponame}/jobs/12345#L123
-* https://travis-ci.org/{username}/{reponame}/builds/12345#L123
+* https://travis-ci.org/user/repo/jobs/12345
+* https://travis-ci.org/user/repo/builds/12345
+* https://travis-ci.org/user/repo/jobs/12345#L123
+* https://travis-ci.org/user/repo/builds/12345#L123
 
 = Support =
 
@@ -43,5 +42,5 @@ You can embed your build logs from Travis CI by simply pasting the URL like belo
 
 == Changelog ==
 
-= 0.0.0 =
+= 0.2.3 =
 * The first release.
