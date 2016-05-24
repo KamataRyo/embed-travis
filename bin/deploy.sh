@@ -35,26 +35,27 @@ git add .
 git commit --quiet -m "Deploy from travis." -m "Original commit is $TRAVIS_COMMIT."
 
 if [[ "master" == "$TRAVIS_BRANCH" ]]; then
-	git checkout -b latest
 	echo "enforcing pushing to 'latest'.."
-	git push --force --quiet "https://${GH_TOKEN}@${GH_REF}" latest > /dev/null 2>&1
+	git push --force --quiet "https://${GH_TOKEN}@${GH_REF}" master:latest > /dev/null 2>&1
 	echo "deployed on 'latest' branch, which is tested on PHP=$TRAVIS_PHP_VERSION & WP=$WP_VERSION"
 fi
 
 if ! [[  "" == "$TRAVIS_TAG" ]]; then
+
 	echo "Deleting remote not compiled tag '$TRAVIS_TAG'.."
 	git push --force --quiet "https://${GH_TOKEN}@${GH_REF}" ":$TRAVIS_TAG" > /dev/null 2>&1
-	echo "Making new tag compiled..."
+
+	echo "Making new tag with compiled files..."
 	git tag "$TRAVIS_TAG" -m "$COMMIT_MESSAGE" -m "Original commit is $TRAVIS_COMMIT."
+
 	echo "Pushing new tag '$TRAVIS_TAG'..."
 	git push --force --quiet --tag "https://${GH_TOKEN}@${GH_REF}" > /dev/null 2>&1
+
 	echo "deployed as '$TRAVIS_TAG', tested on PHP=$TRAVIS_PHP_VERSION & WP=$WP_VERSION"
 
 	echo "Starting to release on WordPress official plugin repository ..."
-
 	GIT_DIR=$(pwd)
 	SVN_DIR=~/svn_dir_to_release
-
 	mkdir $SVN_DIR
 	cd $SVN_DIR
 
