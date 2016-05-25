@@ -5,13 +5,13 @@ Requires at least: 4.0
 Tested up to: 4.5.2
 Stable tag: 0.2.5
 
-Embed your build logs on Travis CI into WordPress easily. Discuss on your history:)
+Embed your build logs on Travis CI into WordPress easily.
 
 == Description ==
 
 * Embed your build logs on Travis CI into WordPress easily.
 * You simply have to paste the URL of your Travis CI build logs.
-* You can embed a specific build history of the Travis CI.
+* You can embed a specific build history from Travis CI.
 
 = Summary =
 
@@ -35,8 +35,8 @@ You can embed your build logs from Travis CI by simply pasting the URL like belo
 
 == Screenshots ==
 
-1. Copy the job URL from travis-ci.org.
-2. Or copy build URL from travis-ci.org, with single job.
+1. Copy the URL for one of the job from travis-ci.org.
+2. Or copy build URL from travis-ci.org, for single job without matrix.
 3. You simply paste URL into WordPress.
 4. It just appears on the post!
 
