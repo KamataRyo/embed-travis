@@ -4,7 +4,7 @@ Plugin Name: oEmbed Travis
 Plugin URI: https://github.com/KamataRyo/oembed-travis
 Description: Embed your build logs on Travis CI into WordPress easily. Discuss on your history:)
 Author: KamataRyo
-Version: 0.2.3
+Version: 0.2.5
 Author URI: http://biwako.io/
 */
 
@@ -58,108 +58,106 @@ class Travis {
 
 
 	public function wp_head() {
-		?>
-		<style>
-			.oembed-travis {
-				margin: 1em .5em 2em;
-			}
-			.travis-log-body .travis-pre {
-				border: none;
-				margin-top: 0;
-				padding: 15px 0;
-				background-color: #222;
-				font-family: Monaco,monospace;
-				font-size: 12px;
-				color: #f1f1f1;
-				line-height: 19px;
-				white-space: pre-wrap;
-				width: 100%;
-				height: 350px;
-				overflow-y: scroll;
-			}
-			.travis-label-on-MCE {
-				display: none;
-			}
-			.travis-log-body p {
-			    padding: 0 15px 0 55px;
-			    margin: 0;
-				position: relative;
-			}
-			.travis-given-active-line {
-				background-color: #888!important;
-			}
-			.travis-log-body p:hover, .travis-log-body .travis-active-line{
-				background-color: #444!important;
-			}
-			.travis-log-body p:hover .travis-info {
-				display:none;
-			}
-			.travis-given-active-line.travis-active-line {
-				background-color: #888!important;
-			}
-			.travis-log-body p.travis-fold-open a:before{
-				content: "\25B6";
-				color: #666;
-				font-size: .75em;
-				position: absolute;
-				left: .5em;
-			}
-			.travis-log-body p.travis-fold-open a, .travis-log-body p.travis-fold-close a {
-				cursor: pointer;
-			}
-			.travis-log-body p.travis-fold-close a:before{
-				content: "\25BC";
-				color: #666;
-				font-size: .75em;
-				position: absolute;
-				left: .5em;
-			}
-			.travis-log-body a {
-    			color: #666;
-				display: inline-block;
-				padding-right: 1em;
-			    text-align: right;
-			    width: 40px;
-			    margin-left: -35px;
-			    text-decoration: none;
-				box-shadow:none;
-			}
-			.travis-info {
-				position: absolute;
-				display: block;
-				top: 4px;
-				padding: 2px 7px 2px;
-				line-height: 10px;
-				font-size: 10px;
-				background-color: #666;
-				border-radius: 6px;
-				color: #bbb;
-				text-align: right;
-			}
-			.travis-fold-start {
-				right: 65px;
-			}
-			.travis-time-start {
-				right: 12px;
-			}
-			.travis-log-footer {
-				padding: 8px 15px 6px;
-				background-color: #444;
-				margin: -1px 0 0 0;
-			}
-			h2.travis-footer-text {
-				font-family: "Source Sans Pro",Helvetica,sans-serif;
-				font-weight: normal;
-				font-size: 14px;
-				text-align:right;
-				color: #f1f1f1;
-				margin: 0;
-			}
-			.travis-log-footer a {
-				color: #FFFFB6;
-			}
-		</style>
-		<?php
+	?>
+	<style>
+		.oembed-travis {
+			margin: 1em .5em 2em;
+			font-size: .75em;
+		}
+		.travis-log-body .travis-pre {
+			height: 350px;
+			border: none;
+			margin: 0;
+			padding: 1em 0;
+			background-color: #222;
+			font-family: Monaco, monospace;
+			color: #f1f1f1;
+			white-space: pre-wrap;
+			overflow-y: scroll;
+		}
+		.travis-log-body a {
+			color: #666;
+			display: inline-block;
+			padding-right: .5em;
+			width: 4.5em;
+			text-align: right !important;
+			margin-right: 0;
+			margin-left: -4.5em;
+			text-decoration: none !important;
+			box-shadow:none;
+		}
+		.travis-log-body p {
+			padding: 0 1em 0 4.5em;
+			margin: 0;
+			position: relative;
+		}
+		.travis-given-active-line {
+			background-color: #888!important;
+		}
+		.travis-log-body p:hover, .travis-log-body .travis-active-line{
+			background-color: #444!important;
+		}
+		.travis-log-body p:hover .travis-info {
+			opacity:0;
+		}
+		.travis-given-active-line.travis-active-line {
+			background-color: #888!important;
+		}
+		.travis-log-body p.travis-fold-open a:before{
+			content: "\25B6";
+			color: #666;
+			font-fize: .75em;
+			position: absolute;
+			left: .5em;
+		}
+		.travis-log-body p.travis-fold-open a, .travis-log-body p.travis-fold-close a {
+			cursor: pointer;
+		}
+		.travis-log-body p.travis-fold-close a:before{
+			content: "\25BC";
+			color: #666;
+			position: absolute;
+			left: .5em;
+		}
+		.travis-info {
+			position: absolute;
+			display: block;
+			top: 1px;
+			padding: 2px 7px;
+			line-height: 1em;
+			background-color: #666;
+			border-radius: 1em;
+			color: #bbb;
+			text-align: right;
+		}
+		.travis-fold-start {
+			right: 5.5em;
+		}
+		.travis-time-start {
+			right: 1em;
+		}
+		.travis-log-footer {
+			padding: .25em 1em .25em;
+			background-color: #444;
+		}
+		.travis-footer-text {
+			font-family: "Source Sans Pro",Helvetica,sans-serif;
+			font-weight: normal;
+			font-size: 1em;
+			text-align:right;
+			color: #f1f1f1;
+			margin: 0;
+		}
+		.travis-log-footer a {
+			color: #ffffb6;
+			text-decoration: none !important;
+		}
+
+		.travis-label-on-MCE {
+			display: none;
+		}
+	</style>
+	<?php
 	}
 
 
@@ -246,6 +244,7 @@ class Travis {
 		}
 
 		$noscript = Travis::get_noscript( $url );
+		$admin_label = Travis::get_editor_label();
 
 		return is_feed() ? $noscript : Travis::create_tag(
 			'div',
@@ -258,7 +257,7 @@ class Travis {
 				"data-$type" => $id,
 				'data-line' => $line,
 			),
-			"<span class=\"travis-label-on-MCE\">{{embed Travis CI build log}}</span><noscript>$noscript</noscript>"
+			$admin_label . $noscript
 		); # xss ok
 	}
 
@@ -286,10 +285,13 @@ class Travis {
 
 
 	public static function get_noscript( $url ) {
-		return sprintf(
-			__( 'View the build log on <a href="%s">Travis CI</a>.', 'oembed-travis' ),
-			esc_url( $url )
-		);
+		return '<noscript><a href="' . esc_url( $url ) . '">' . esc_url( $url ) . '</noscript>';
+	}
+
+	public static function get_editor_label() {
+		return is_admin() ?
+			'<span class="travis-label-on-MCE">{{embeded build log}}</span>' :
+			'';
 	}
 
 

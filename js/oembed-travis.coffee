@@ -33,7 +33,7 @@ formatLines = (lines) ->
     ESC = String.fromCharCode 27
     CR = String.fromCharCode 13
     LF = String.fromCharCode 10
-    lines = lines.replace CR + LF, CR
+    # lines = lines.replace CR + LF, CR
     lines = lines.split "\n"
 
     html = ''
@@ -160,9 +160,9 @@ addFooter = ($container, selector, arg) ->
     if url
         content = "<a href=\"#{url}\">#{content}</a>"
     $container.append $ """
-    <div class=\"travis-log-footer\"><h2 class="travis-footer-text">
+    <div class=\"travis-log-footer\"><div class="travis-footer-text">
         #{content} built with <a href=\"https://travis-ci.org\">Travis CI</a>.
-    </h2></div>
+    </div></div>
     """
 
 
