@@ -33,18 +33,19 @@ formatLines = (lines) ->
     ESC = String.fromCharCode 27
     CR = String.fromCharCode 13
     LF = String.fromCharCode 10
-    # lines = lines.replace CR + LF, CR
-    lines = lines.split "\n"
+    lines = lines.replace '[0G' + CR + LF, ''
+    lines = lines.split LF
 
     html = ''
     for line, index in lines
-        console.log "#{index}: #{escape(line)}"
+        console.log "#{index + 1}: #{escape line}"
+        # console.log /^%1B%5B0m(%1B%5B0G([-/]|%[75]C))+%1B%5B0G%0D$/.test escape line
         attr = ''
         line = line.replace /travis_(fold|time):(start|end):(.+)/g, (match, p1, p2, p3) ->
             if p1? and p2?
                 attr += " data-#{p1}-#{p2}=\"#{p3}\""
             return ''
-        line = ansi2Html line, styleSets
+        line = ansi2Html(line, styleSets)
         line = line.replace new RegExp(CR,'g'), ''
         line = line.replace new RegExp(ESC,'g'), ''
         line = line.replace /\[\d?[KG]/g, '' # maybe this erases non-escaped line

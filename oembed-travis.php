@@ -62,7 +62,6 @@ class Travis {
 	<style>
 		.oembed-travis {
 			margin: 1em .5em 2em;
-			font-size: .75em;
 		}
 		.travis-log-body .travis-pre {
 			height: 350px;
@@ -71,9 +70,13 @@ class Travis {
 			padding: 1em 0;
 			background-color: #222;
 			font-family: Monaco, monospace;
+			font-size: .75em !important;
 			color: #f1f1f1;
 			white-space: pre-wrap;
 			overflow-y: scroll;
+		}
+		.travis-log-body div, .travis-log-body span {
+			font-size: 1em;
 		}
 		.travis-log-body a {
 			color: #666;
@@ -83,13 +86,15 @@ class Travis {
 			text-align: right !important;
 			margin-right: 0;
 			margin-left: -4.5em;
+			font-size: 1em;
 			text-decoration: none !important;
 			box-shadow:none;
 		}
 		.travis-log-body p {
+			position: relative;
 			padding: 0 1em 0 4.5em;
 			margin: 0;
-			position: relative;
+			font-size: 1em;
 		}
 		.travis-given-active-line {
 			background-color: #888!important;
