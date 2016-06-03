@@ -102,6 +102,9 @@ class Travis {
 		.travis-log-body p:hover, .travis-log-body .travis-active-line{
 			background-color: #444!important;
 		}
+		.travis-log-body p:hover span[style*="background-color:#222"] {
+				background-color: #444!important;
+		}
 		.travis-log-body p:hover .travis-info {
 			opacity:0;
 		}
@@ -153,9 +156,9 @@ class Travis {
 			color: #f1f1f1;
 			margin: 0;
 		}
-		.travis-log-footer a {
+		.travis-log-footer a.travis-link-text {
 			color: #ffffb6;
-			text-decoration: none !important;
+			text-decoration: none;
 		}
 
 		.travis-label-on-MCE {

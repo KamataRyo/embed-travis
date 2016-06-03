@@ -159,10 +159,10 @@ addFooter = ($container, selector, arg) ->
     if line and $container.find("#{selector} p").eq(line - 1).length > 0
         content = "#{content}#L#{line}"
     if url
-        content = "<a href=\"#{url}\">#{content}</a>"
+        content = "<a class=\"travis-link-text\" href=\"#{url}\">#{content}</a>"
     $container.append $ """
     <div class=\"travis-log-footer\"><div class="travis-footer-text">
-        #{content} built with <a href=\"https://travis-ci.org\">Travis CI</a>.
+        #{content} built with <a class="travis-link-text" href=\"https://travis-ci.org\">Travis CI</a>.
     </div></div>
     """
 
@@ -213,7 +213,7 @@ main = ->
 
             $.ajax requestOptions
                 .then (lines) ->
-                    $container.append $ formatLines(lines)
+                    $container.append $ formatLines lines
                     addFoldLabel $container, '.travis-log-body p[data-fold-start]'
                     addTimeLabel $container, '.travis-log-body p[data-time-start]'
                     addFoldHandlers $container, '.travis-log-body p[data-fold-start]>a'
