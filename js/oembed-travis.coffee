@@ -38,7 +38,7 @@ formatLines = (lines) ->
     html = ''
 
     for line, index in lines
-        console.log "#{index + 1}: #{escape line}"
+        # console.log "#{index + 1}: #{escape line}"
         # console.log /^%1B%5B0m(%1B%5B0G([-/]|%[75]C))+%1B%5B0G%0D$/.test escape line
         attr = ''
         line = line.replace /travis_(fold|time):(start|end):(.+)/g, (match, p1, p2, p3) ->
