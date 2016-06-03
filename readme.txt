@@ -3,7 +3,7 @@ Contributors: kamataryo, miyauchi
 Tags: url, link, embed, post, Travis, Travis CI
 Requires at least: 4.0
 Tested up to: 4.5.2
-Stable tag: 0.2.5
+Stable tag: 0.2.6
 
 Embed your build logs on Travis CI into WordPress easily.
 
@@ -41,6 +41,9 @@ You can embed your build logs from Travis CI by simply pasting the URL like belo
 4. It just appears on the post!
 
 == Changelog ==
+
+= 0.2.6 =
+* Update style
 
 = 0.2.5 =
 * bug and style fix
