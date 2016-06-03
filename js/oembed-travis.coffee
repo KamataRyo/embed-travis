@@ -35,8 +35,8 @@ formatLines = (lines) ->
     LF = String.fromCharCode 10
     lines = lines.replace '[0G' + CR + LF, ''
     lines = lines.split LF
-
     html = ''
+
     for line, index in lines
         console.log "#{index + 1}: #{escape line}"
         # console.log /^%1B%5B0m(%1B%5B0G([-/]|%[75]C))+%1B%5B0G%0D$/.test escape line
@@ -88,7 +88,7 @@ styleSets =
     47: { 'background-color': '#f1f1f1' } # white
     49: { 'background-color': '#222' } # default
 
-
+# for test
 if window? then $ = jQuery
 
 
