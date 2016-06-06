@@ -30,7 +30,7 @@ script:
 
 after_success:
 - npm run generatePot
-- curl https://gist.githubusercontent.com/KamataRyo/8fd5e7b6aea4de1b3b48a5f4c429ecbe/raw/df91683e27a18e62e441fae6e0bc95b4d49d67b0/wp_plugin_deploy.sh | bash
+- curl https://raw.githubusercontent.com/KamataRyo/travis-sctipts-collection/master/deploy-wp-plugin.sh | bash
 
 matrix:
   include:
