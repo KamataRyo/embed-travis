@@ -1,5 +1,6 @@
-# they are unnecessary files to release and not official expresion for SVN.
+# files to eliminate for release.
 
+.git
 .DS_Store
 npm-debug.log
 .sass-cache

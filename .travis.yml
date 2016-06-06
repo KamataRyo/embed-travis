@@ -18,11 +18,11 @@ branches:
   - "/^v?[0-9](\\.[0-9])*/"
 
 before_script:
-- curl https://gist.githubusercontent.com/KamataRyo/cf31b8ffe87cebae64a3acf702692e76/raw/7f9aac841b5c9be3de235b6c70c480fbdaa50c34/install-wp-tests.sh > ./install-wp-tests.sh
-- bash ./install-wp-tests.sh wordpress_test root '' localhost $WP_VERSION
-- npm cache clean
-- travis_retry npm install
-- npm run build
+  - curl https://raw.githubusercontent.com/KamataRyo/travis-sctipts-collection/master/install-wp-tests.sh > ./install-wp-tests.sh
+  - bash ./install-wp-tests.sh wordpress_test root '' localhost $WP_VERSION
+  - npm cache clean
+  - travis_retry npm install
+  - npm run build
 
 script:
 - npm test
@@ -45,6 +45,6 @@ env:
   - WP_VERSION_TO_DEPLOY: latest
   - PHP_VERSION_TO_DEPLOY: 5.6
   - WP_MULTISITE_TO_DEPLOY: 0
-  - SVN_REPO: https://plugins.svn.wordpress.org/oembed-travis/
+  - SVN_REF: https://plugins.svn.wordpress.org/oembed-travis/
   - GH_REF: github.com/KamataRyo/oembed-travis.git
-  - secure: "RS7bvoAgoox679R5c/yuXDPO7sriUeDX6fOH8I7WM4D8t5Gv/+d7mnrtScXSNo/PSBF1fPOwkhyrmwdsm7YfA75rwTVgeEavNxDgmKAdxMEkelXZKaQyjHoDe8ckrOUNAJ/KZ3stBQ0ibZRrrPDbFXvFrKHyOWUL7L3xEyQK4youylzuPY5eyvVHFckbvG2InomAWfx4D9CKEn7j/jzkH6WRerWDsnG1VAtuIHqnuDBzViRuOG6YduHeeBf3HaevMALtL+8aDVKZt+9thXuFf3g9MMy77iWFxTGEwWl5m1tz1s2iTY/XPZa7ETTxe1D+negP1HD2K6ZK6Co7xbd1twdVJtobrh1OjUA8y7sgWUuZz/rAyeBCyjpQ+HPEAwh6F5wm3vicXINSAM70E6wpnA/7Z4/rVghgUXngP/fjTbd2tcsdO70Zx22/kt8yBOxoHhk+MPZS+GV66ZR93EgmzXkWBFOXJ1BlSt9v+LhK++y0nwTQXnp85j63y5SbfgrdG09Y+qzjlG1Qlro2z/PAvQwVtrCaGbcx1N8gpZEguxey7FaTSpOy+dKOBymF6dt+G9EX8fDlM6FUncoB5sq5UAYQG1q5cDR/HKfNAcTIK4npiGROM1pcXpNVtqHX7rIN991DSGVje/qWEDm9Y1mRiGVtPXulrVOAsaQMylJJX0Q="
+  - secure: "a/QQ7WgztQeINOonHMRMwsczbjhmSsjkPpcZA85QvbCnj2An+uiGGijeukufcvmeeyszE0o7sYBjiWv8ll1jiOf0W+ETcP5Go4HAK5osUGpHIrDnYjitW2UPXtd6SONL5e9HHFi5aSFNNdLrU2Ohl2r45e7TP6J159rausEysmsBY+5OjnqazHunDbl+qszSAoI3oQC3Z0Yi1fWbvmK5rkhCslq/2LOdJkkHmOnDYnGH+NGiX04koUnK5EzT2i4tTiNjNboH51khwXhcIB0TL3FwNjRFmOvUv7B3sbDciiJrdSnmFtlBPqR7LLI3180kLr1A6LRzM5HmGFTAmb4kKH8bRyIox5Q7/svD7b6/IYq8gyVULhSKacAYtku2LZSC3KOFp0RU9hAgPmZ+YGMlq1B7ONoD16U0CXyfF/PJQkYX/GoPLUK6vM1mdv155SJVJOPjtQGgOwRtCjZJeGNYqi9Fu5GIoYU1LFx1UvV1SK/PrkpoSOLARba5MG2EhoZzQHq0lhCImlyvCCH1s2I6dFGiDhvqzWEFvZGacoy+IgndtMmNSU0JlNo8cjIApJDbzGXWyLI9vjC1GcF+TQjMQrJhEvqdTzdLlX+C5Ro1KoZynA74S1I1L0bnpD9uWnPXk6akAnqa1QjMKzhpJnaRLIXaJRB8We+9mr5pYpFur6U="
