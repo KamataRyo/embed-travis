@@ -42,6 +42,9 @@ You can embed your build logs from Travis CI by simply pasting the URL like belo
 
 == Changelog ==
 
+= 0.3.6 =
+* Update style
+
 = 0.2.6 =
 * Update style
 
