@@ -6,7 +6,7 @@ class EmbedTravis_Test extends WP_UnitTestCase
 	 * Add post and post to be set current.
 	 *
 	 * @param  array $args A hash array of the post object.
- *
+	 *
 	 * @return none
 	 */
 	public function setup_postdata($args)
