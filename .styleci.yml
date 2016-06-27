@@ -6,7 +6,6 @@ preset: recommended
 
 enabled:
   - long_array_syntax
-  - align_equals
 
 disabled:
   - short_array_syntax
