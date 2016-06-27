@@ -1,7 +1,14 @@
 risky: false
+
 linting: true
+
 preset: recommended
+
 enabled:
   - long_array_syntax
+  - align_equals
+
 disabled:
   - short_array_syntax
+  - no_spaces_inside_parenthesis
+  - no_tab_indentation
