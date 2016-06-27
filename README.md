@@ -2,8 +2,11 @@
 
 [![Build Status](https://travis-ci.org/KamataRyo/oembed-travis.svg)](https://travis-ci.org/KamataRyo/oembed-travis)
 [![Wordpress official repository](https://img.shields.io/wordpress/v/oembed-travis.svg)](https://wordpress.org/plugins/oembed-travis/)
+[![StyleCI](https://styleci.io/repos/58851332/shield)](https://styleci.io/repos/58851332)
 
-* https://wordpress.org/plugins/oembed-travis/
+## Official Repository
+
+https://wordpress.org/plugins/oembed-travis/
 
 ## Contributing
 
