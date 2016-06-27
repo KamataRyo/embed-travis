@@ -6,7 +6,6 @@ preset: recommended
 
 enabled:
   - long_array_syntax
-  - no_spaces_after_function_name
 
 disabled:
   - short_array_syntax
