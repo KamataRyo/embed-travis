@@ -1,0 +1,13 @@
+{
+    "name": "kamataryo/oembed-travis",
+    "description": "This WordPress plunin embeds your build logs on Travis CI into WordPress easily.",
+    "type": "wordpress-plugin",
+    "license": "GPL-2.0",
+    "authors": [
+        {
+            "name": "KamataRyo",
+            "email": "mugil.cephalus+composer.org@gmail.com"
+        }
+    ],
+    "require": {}
+}
