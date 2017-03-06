@@ -1,21 +1,24 @@
 <?php
 
-class EmbedTravis_Test extends WP_UnitTestCase {
-	/**
+class EmbedTravis_Test extends WP_UnitTestCase
+{
+    /**
 	 * Add post and post to be set current.
 	 *
 	 * @param  array $args A hash array of the post object.
+ *
 	 * @return none
 	 */
-	public function setup_postdata( $args ) {
-		global $post;
-		global $wp_query;
+	public function setup_postdata($args)
+	{
+	    global $post;
+	    global $wp_query;
 
-		$wp_query->is_singular = true;
+	    $wp_query->is_singular = true;
 
-		$post_id = $this->factory->post->create( $args );
-		$post = get_post( $post_id );
-		setup_postdata( $post );
+	    $post_id = $this->factory->post->create( $args );
+	    $post = get_post( $post_id );
+	    setup_postdata( $post );
 	}
 
 	/**
@@ -23,34 +26,36 @@ class EmbedTravis_Test extends WP_UnitTestCase {
 	 *
 	 * @test
 	 */
-	public function shortcode_test_success() {
-		$this->assertRegExp(
+	public function shortcode_test_success()
+	{
+	    $this->assertRegExp(
 			'/^(<div id="builds-126275217" class="oembed-travis" data-builds="126275217">).*(<noscript>).*(<\/noscript><\/div>)$/',
 			do_shortcode( '[travis builds="126275217"]' )
 		);
 
-		$this->assertRegExp(
+	    $this->assertRegExp(
 			'/^(<div id="jobs-130318268" class="oembed-travis" data-jobs="130318268">).*(<noscript>).*(<\/noscript><\/div>)$/',
 			do_shortcode( '[travis jobs="130318268"]' )
 		);
 
-		$this->assertRegExp(
+	    $this->assertRegExp(
 			'/^(<div id="builds-126275217-L120" class="oembed-travis" data-builds="126275217" data-line="120">).*(<noscript>).*(<\/noscript><\/div>)$/',
 			do_shortcode( '[travis builds="126275217" line="120"]' )
 		);
 
-		$this->assertRegExp(
+	    $this->assertRegExp(
 			'/^(<div id="jobs-130318268-L145" class="oembed-travis" data-jobs="130318268" data-line="145">).*(<noscript>).*(<\/noscript><\/div>)$/',
 			do_shortcode( '[travis jobs="130318268" line="145"]' )
 		);
-
 	}
+
 	/**
 	 * shortcode execution fails.
 	 *
 	 * @test
 	 */
-	public function shortcode_test_failure() {
+	public function shortcode_test_failure()
+	{
 
 		// no id
 		$this->assertSame(
@@ -62,210 +67,219 @@ class EmbedTravis_Test extends WP_UnitTestCase {
 		$values = array(
 			'-12345',
 			'34566.3',
-			'string'
+			'string',
 		);
-		foreach ($values as $value) {
-			$this->assertSame(
+	    foreach ($values as $value) {
+	        $this->assertSame(
 				Travis::get_embed_failure(),
-				do_shortcode( '[travis builds="' . $value . '"]' )
+				do_shortcode( '[travis builds="'.$value.'"]' )
 			);
 
-			$this->assertSame(
+	        $this->assertSame(
 				Travis::get_embed_failure(),
-				do_shortcode( '[travis jobs="' . $value . '"]' )
+				do_shortcode( '[travis jobs="'.$value.'"]' )
 			);
-		}
+	    }
 
 		// invalid line value
 		$values = array(
 			'-10',
 			'4.5',
-			'string'
+			'string',
 		);
-		foreach ($values as $value) {
-			$this->assertSame(
+	    foreach ($values as $value) {
+	        $this->assertSame(
 				Travis::get_embed_failure(),
-				do_shortcode( '[travis builds="126275217" line="' . $value . '"]' )
+				do_shortcode( '[travis builds="126275217" line="'.$value.'"]' )
 			);
-		}
+	    }
 	}
 
 	/**
-	 * build with single job, without line
+	 * build with single job, without line.
 	 *
 	 * @test
 	 */
-	public function the_content_01() {
-		$url = 'https://travis-ci.org/KamataRyo/nationalpark-map/builds/126275217';
-		$noscript = Travis::get_noscript( $url );
-		$editor_label = Travis::get_editor_label();
+	public function the_content_01()
+	{
+	    $url = 'https://travis-ci.org/KamataRyo/nationalpark-map/builds/126275217';
+	    $noscript = Travis::get_noscript( $url );
+	    $editor_label = Travis::get_editor_label();
 
-		$this->setup_postdata( array(
+	    $this->setup_postdata( array(
 			'post_content' => $url,
 		) );
 
-		$this->expectOutputString('<div id="builds-126275217" class="oembed-travis" data-url="' . $url . '" data-author="KamataRyo" data-repo="nationalpark-map" data-builds="126275217">' . $editor_label . $noscript . '</div>'."\n");
+	    $this->expectOutputString('<div id="builds-126275217" class="oembed-travis" data-url="'.$url.'" data-author="KamataRyo" data-repo="nationalpark-map" data-builds="126275217">'.$editor_label.$noscript.'</div>'."\n");
 
-		the_content();
+	    the_content();
 	}
 
 	/**
-	 * build one of jobs, without line
+	 * build one of jobs, without line.
 	 *
 	 * @test
 	 */
-	public function the_content_02() {
-		$url = 'https://travis-ci.org/KamataRyo/inherit-theme-mods/jobs/130318268';
-		$noscript = Travis::get_noscript( $url );
-		$editor_label = Travis::get_editor_label();
+	public function the_content_02()
+	{
+	    $url = 'https://travis-ci.org/KamataRyo/inherit-theme-mods/jobs/130318268';
+	    $noscript = Travis::get_noscript( $url );
+	    $editor_label = Travis::get_editor_label();
 
-		$this->setup_postdata( array(
+	    $this->setup_postdata( array(
 			'post_content' => $url,
 		) );
 
-		$this->expectOutputString('<div id="jobs-130318268" class="oembed-travis" data-url="' . $url . '" data-author="KamataRyo" data-repo="inherit-theme-mods" data-jobs="130318268">' . $editor_label . $noscript . '</div>'."\n");
+	    $this->expectOutputString('<div id="jobs-130318268" class="oembed-travis" data-url="'.$url.'" data-author="KamataRyo" data-repo="inherit-theme-mods" data-jobs="130318268">'.$editor_label.$noscript.'</div>'."\n");
 
-		the_content();
+	    the_content();
 	}
 
 	/**
-	 * build with single job, with line
+	 * build with single job, with line.
 	 *
 	 * @test
 	 */
-	public function the_content_03() {
-		$url = 'https://travis-ci.org/KamataRyo/nationalpark-map/builds/126275217#L120';
-		$noscript = Travis::get_noscript( $url );
-		$editor_label = Travis::get_editor_label();
+	public function the_content_03()
+	{
+	    $url = 'https://travis-ci.org/KamataRyo/nationalpark-map/builds/126275217#L120';
+	    $noscript = Travis::get_noscript( $url );
+	    $editor_label = Travis::get_editor_label();
 
-		$this->setup_postdata( array(
+	    $this->setup_postdata( array(
 			'post_content' => $url,
 		) );
 
-		$this->expectOutputString('<div id="builds-126275217-L120" class="oembed-travis" data-url="' . $url . '" data-author="KamataRyo" data-repo="nationalpark-map" data-builds="126275217" data-line="120">' . $editor_label . $noscript . '</div>'."\n");
+	    $this->expectOutputString('<div id="builds-126275217-L120" class="oembed-travis" data-url="'.$url.'" data-author="KamataRyo" data-repo="nationalpark-map" data-builds="126275217" data-line="120">'.$editor_label.$noscript.'</div>'."\n");
 
-		the_content();
+	    the_content();
 	}
 
 	/**
-	 * build one of jobs, with line
+	 * build one of jobs, with line.
 	 *
 	 * @test
 	 */
-	public function the_content_04() {
-		$url = 'https://travis-ci.org/KamataRyo/inherit-theme-mods/jobs/130318268#L145';
-		$noscript = Travis::get_noscript( $url );
-		$editor_label = Travis::get_editor_label();
+	public function the_content_04()
+	{
+	    $url = 'https://travis-ci.org/KamataRyo/inherit-theme-mods/jobs/130318268#L145';
+	    $noscript = Travis::get_noscript( $url );
+	    $editor_label = Travis::get_editor_label();
 
-		$this->setup_postdata( array(
+	    $this->setup_postdata( array(
 			'post_content' => $url,
 		) );
 
-		$this->expectOutputString('<div id="jobs-130318268-L145" class="oembed-travis" data-url="' . $url . '" data-author="KamataRyo" data-repo="inherit-theme-mods" data-jobs="130318268" data-line="145">' . $editor_label . $noscript . '</div>'."\n");
+	    $this->expectOutputString('<div id="jobs-130318268-L145" class="oembed-travis" data-url="'.$url.'" data-author="KamataRyo" data-repo="inherit-theme-mods" data-jobs="130318268" data-line="145">'.$editor_label.$noscript.'</div>'."\n");
 
-		the_content();
+	    the_content();
 	}
 
 	/**
-	 * Not match Travis host
+	 * Not match Travis host.
 	 *
 	 * @test
 	 */
-	public function the_content_failure_01() {
-		$url = 'https://example.com/KamataRyo/nationalpark-map/builds/126275217';
+	public function the_content_failure_01()
+	{
+	    $url = 'https://example.com/KamataRyo/nationalpark-map/builds/126275217';
 
-		$this->setup_postdata( array(
+	    $this->setup_postdata( array(
 			'post_content' => $url,
 		) );
 
-		$this->expectOutputString( '<p>' . $url . '</p>' . "\n" );
+	    $this->expectOutputString( '<p>'.$url.'</p>'."\n" );
 
-		the_content();
+	    the_content();
 	}
 
 	/**
-	 * URL lacks directory
+	 * URL lacks directory.
 	 *
 	 * @test
 	 */
-	public function the_content_failure_02() {
-		$url = 'https://travis-ci.org/nationalpark-map/builds/126275217';
+	public function the_content_failure_02()
+	{
+	    $url = 'https://travis-ci.org/nationalpark-map/builds/126275217';
 
-		$this->setup_postdata( array(
+	    $this->setup_postdata( array(
 			'post_content' => $url,
 		) );
 
-		$this->expectOutputString( '<p>' . $url . '</p>' . "\n" );
+	    $this->expectOutputString( '<p>'.$url.'</p>'."\n" );
 
-		the_content();
+	    the_content();
 	}
 
 	/**
-	 * No builds or jobs directories
+	 * No builds or jobs directories.
 	 *
 	 * @test
 	 */
-	public function the_content_failure_03() {
-		$url = 'https://travis-ci.org/KamataRyo/nationalpark-map/unknown/126275217';
+	public function the_content_failure_03()
+	{
+	    $url = 'https://travis-ci.org/KamataRyo/nationalpark-map/unknown/126275217';
 
-		$this->setup_postdata( array(
+	    $this->setup_postdata( array(
 			'post_content' => $url,
 		) );
 
-		$this->expectOutputString( '<p>' . $url . '</p>' . "\n" );
+	    $this->expectOutputString( '<p>'.$url.'</p>'."\n" );
 
-		the_content();
+	    the_content();
 	}
 
 	/**
-	 * With invalid id value
+	 * With invalid id value.
 	 *
 	 * @test
 	 */
-	public function the_content_failure_04() {
-		$url = 'https://travis-ci.org/KamataRyo/nationalpark-map/builds/invalid_id_value';
+	public function the_content_failure_04()
+	{
+	    $url = 'https://travis-ci.org/KamataRyo/nationalpark-map/builds/invalid_id_value';
 
-		$this->setup_postdata( array(
+	    $this->setup_postdata( array(
 			'post_content' => $url,
 		) );
 
-		$this->expectOutputString( '<p>' . $url . '</p>' . "\n" );
+	    $this->expectOutputString( '<p>'.$url.'</p>'."\n" );
 
-		the_content();
+	    the_content();
 	}
 
 	/**
-	 * With invalid hash id value(without 'L' prefix)
+	 * With invalid hash id value(without 'L' prefix).
 	 *
 	 * @test
 	 */
-	public function the_content_failure_05() {
-		$url = 'https://travis-ci.org/KamataRyo/nationalpark-map/builds/126275217#120';
+	public function the_content_failure_05()
+	{
+	    $url = 'https://travis-ci.org/KamataRyo/nationalpark-map/builds/126275217#120';
 
-		$this->setup_postdata( array(
+	    $this->setup_postdata( array(
 			'post_content' => $url,
 		) );
 
-		$this->expectOutputString( '<p>' . $url . '</p>' . "\n" );
+	    $this->expectOutputString( '<p>'.$url.'</p>'."\n" );
 
-		the_content();
+	    the_content();
 	}
 
 	/**
-	 * With invalid hash id value(string)
+	 * With invalid hash id value(string).
 	 *
 	 * @test
 	 */
-	public function the_content_failure_06() {
-		$url = 'https://travis-ci.org/KamataRyo/nationalpark-map/builds/126275217#string';
+	public function the_content_failure_06()
+	{
+	    $url = 'https://travis-ci.org/KamataRyo/nationalpark-map/builds/126275217#string';
 
-		$this->setup_postdata( array(
+	    $this->setup_postdata( array(
 			'post_content' => $url,
 		) );
 
-		$this->expectOutputString( '<p>' . $url . '</p>' . "\n" );
+	    $this->expectOutputString( '<p>'.$url.'</p>'."\n" );
 
-		the_content();
+	    the_content();
 	}
-
 }
