@@ -12,53 +12,53 @@ $e_travis = new Travis();
 $e_travis->register();
 
 
-class Travis {
+class Travis
+{
+    private $shotcode_tag = 'travis';
+    private $regex = '/^https:\/\/travis-ci\.org\/([a-zA-Z-_0-9]+)\/([a-zA-Z-_0-9]+)\/((builds)|(jobs))\/[1-9][0-9]*(#L[1-9][0-9]*)?$/';
+    const TRAVIS_URL_PREFIX = 'https://travis-ci.org';
 
-	private $shotcode_tag = 'travis';
-	private $regex = '/^https:\/\/travis-ci\.org\/([a-zA-Z-_0-9]+)\/([a-zA-Z-_0-9]+)\/((builds)|(jobs))\/[1-9][0-9]*(#L[1-9][0-9]*)?$/';
-	const TRAVIS_URL_PREFIX = 'https://travis-ci.org';
+    public function register()
+    {
+        add_action('plugins_loaded', [$this, 'plugins_loaded']);
+    }
 
+    public function plugins_loaded()
+    {
+        add_action('wp_enqueue_scripts', [$this, 'enquene_script']);
+        add_action('wp_head', [$this, 'wp_head']);
 
-	function register() {
-		add_action( 'plugins_loaded', array( $this, 'plugins_loaded' ) );
-	}
+        load_plugin_textdomain(
+            'oembed-travis',
+            false,
+            plugins_url(implode(['languages'], DIRECTORY_SEPARATOR), __FILE__)
+        );
 
+        wp_embed_register_handler(
+            'oembed-travis',
+            $this->get_travis_url_regex(),
+            [$this, 'handler']
+        );
 
-	public function plugins_loaded() {
-		add_action( 'wp_enqueue_scripts', array( $this, 'enquene_script' ) );
-		add_action( 'wp_head', array( $this, 'wp_head' ) );
+        add_shortcode($this->get_shortcode_tag(), [$this, 'shortcode']);
+    }
 
-		load_plugin_textdomain(
-			'oembed-travis',
-			false,
-			plugins_url( implode( array( 'languages' ), DIRECTORY_SEPARATOR ), __FILE__ )
-		);
+    public function enquene_script()
+    {
+        wp_register_script(
+            'oembed-travis-script',
+            plugins_url(implode(['js', 'oembed-travis.js'], DIRECTORY_SEPARATOR), __FILE__),
+            ['jquery'],
+            '',
+            true
+        );
+        wp_enqueue_script('jquery');
+        wp_enqueue_script('oembed-travis-script');
+    }
 
-		wp_embed_register_handler(
-			'oembed-travis',
-			$this->get_travis_url_regex(),
-			array( $this, 'handler' )
-		);
-
-		add_shortcode( $this->get_shortcode_tag(), array( $this, 'shortcode' ) );
-	}
-
-
-	public function enquene_script() {
-		wp_register_script(
-			'oembed-travis-script',
-			plugins_url( implode( array( 'js', 'oembed-travis.js' ), DIRECTORY_SEPARATOR ), __FILE__ ),
-			array( 'jquery' ),
-			'',
-			true
-		);
-		wp_enqueue_script( 'jquery' );
-		wp_enqueue_script( 'oembed-travis-script' );
-	}
-
-
-	public function wp_head() {
-	?>
+    public function wp_head()
+    {
+        ?>
 	<style>
 		.oembed-travis {
 			margin: 1em .5em 2em;
@@ -166,170 +166,171 @@ class Travis {
 		}
 	</style>
 	<?php
-	}
 
+    }
 
-	public function handler( $m, $attr, $url, $rattr ) {
+    public function handler($m, $attr, $url, $rattr)
+    {
+        $url = $m[0];
+        $author = $m[1];
+        $repo = $m[2];
+        $type = $m[3];
 
-		$url    = $m[0];
-		$author = $m[1];
-		$repo   = $m[2];
-		$type   = $m[3];
+        $url_parsed = parse_url($url);
+        $path_parsed = explode('/', $url_parsed['path']);
+        $id = $path_parsed[4];
 
-		$url_parsed = parse_url( $url );
-		$path_parsed = explode( '/', $url_parsed['path'] );
-		$id = $path_parsed[4];
+        if (isset($url_parsed['fragment']) && $url_parsed['fragment']) {
+            $fragment = $url_parsed['fragment'];
+            $match = preg_match(
+                '/^L[1-9][0-9]*$/',
+                $fragment
+            );
+            if ($match > 0) {
+                $line = substr($fragment, 1, strlen($fragment) - 1);
+            } else {
+                $line = 0;
+            }
+        } else {
+            $line = null;
+        }
 
-		if ( isset( $url_parsed['fragment'] ) && $url_parsed['fragment'] ) {
-			$fragment = $url_parsed['fragment'];
-			$match = preg_match(
-				'/^L[1-9][0-9]*$/',
-				$fragment
-			);
-			if ( $match > 0 ) {
-				$line = substr( $fragment, 1, strlen( $fragment ) - 1 );
-			} else {
-				$line = 0;
-			}
-		} else {
-			$line = NULL;
-		}
+        return $this->shortcode([
+            'url'    => $url,
+            'author' => $author,
+            'repo'   => $repo,
+            $type    => $id,
+            'line'   => $line,
+        ]);
+    }
 
-		return $this->shortcode( array(
-			'url'    => $url,
-			'author' => $author,
-			'repo'   => $repo,
-			$type    => $id,
-			'line'   => $line,
-		) );
-	}
+    public function shortcode($p)
+    {
 
+        // parse required attributes.
+        // One of two are required
+        if (isset($p['builds']) && $p['builds']) {
+            $type = 'builds';
+            $id = $p['builds'];
+        } elseif (isset($p['jobs']) && $p['jobs']) {
+            $type = 'jobs';
+            $id = $p['jobs'];
+        } else {
+            return is_feed() ? '' : self::get_embed_failure();
+        }
 
-	public function shortcode( $p ) {
+        if (!self::is_positive_int($id)) {
+            return is_feed() ? '' : self::get_embed_failure();
+        }
+        $html_id = "$type-$id";
 
-		// parse required attributes.
-		// One of two are required
-		if ( isset( $p['builds'] ) && $p['builds'] ) {
-			$type = 'builds';
-			$id = $p['builds'];
-		} elseif ( isset( $p['jobs'] ) && $p['jobs'] ) {
-			$type = 'jobs';
-			$id = $p['jobs'];
-		} else {
-			return is_feed() ? '' : self::get_embed_failure();
-		}
+        // parse optional attributes
+        $url = null;
+        if (isset($p['url']) && $p['url']) {
+            $url = $p['url'];
+        }
 
-		if ( ! self::is_positive_int( $id ) ) {
-			return is_feed() ? '' : self::get_embed_failure();
-		}
-		$html_id = "$type-$id";
+        $author = null;
+        if (isset($p['author']) && $p['author']) {
+            $author = $p['author'];
+        }
 
-		// parse optional attributes
-		$url = NULL;
-		if ( isset( $p['url'] ) && $p['url'] ) {
-			$url = $p['url'];
-		}
+        $repo = null;
+        if (isset($p['repo']) && $p['repo']) {
+            $repo = $p['repo'];
+        }
 
-		$author = NULL;
-		if ( isset( $p['author'] ) && $p['author'] ) {
-			$author = $p['author'];
-		}
+        $line = null;
+        $line_hash = '';
+        if (isset($p['line']) && $p['line']) {
+            $line = $p['line'];
+            if (!self::is_positive_int($line)) {
+                return is_feed() ? '' : self::get_embed_failure();
+            }
+            $html_id .= "-L$line";
+            $line_hash = "#L$line";
+        }
 
-		$repo = NULL;
-		if ( isset( $p['repo'] ) && $p['repo'] ) {
-			$repo = $p['repo'];
-		}
+        $noscript = self::get_noscript($url);
+        $admin_label = self::get_editor_label();
 
-		$line = NULL;
-		$line_hash = '';
-		if ( isset( $p['line'] ) && $p['line'] ) {
-			$line = $p['line'];
-			if ( ! self::is_positive_int( $line ) ) {
-				return is_feed() ? '' : self::get_embed_failure();
-			}
-			$html_id .= "-L$line";
-			$line_hash = "#L$line";
-		}
+        return is_feed() ? $noscript : self::create_tag(
+            'div',
+            [
+                'id'          => $html_id,
+                'class'       => 'oembed-travis',
+                'data-url'    => $url,
+                'data-author' => $author,
+                'data-repo'   => $repo,
+                "data-$type"  => $id,
+                'data-line'   => $line,
+            ],
+            $admin_label.$noscript
+        ); // xss ok
+    }
 
-		$noscript = Travis::get_noscript( $url );
-		$admin_label = Travis::get_editor_label();
+    /**
+     * create tag with attributes.
+     */
+    private static function create_tag($tagname, $attributes, $content)
+    {
+        $tagname = esc_html($tagname);
+        $attribute_strings = [''];
+        foreach ($attributes as $key => $value) {
+            if (null !== $value) {
+                $key = esc_attr($key);
+                $value = esc_attr($value);
+                if ('' === $value) {
+                    array_push($attribute_strings, $key);
+                } else {
+                    array_push($attribute_strings, "$key=\"$value\"");
+                }
+            }
+        }
 
-		return is_feed() ? $noscript : Travis::create_tag(
-			'div',
-			array(
-				'id' => $html_id,
-				'class' => 'oembed-travis',
-				'data-url' => $url,
-				'data-author' => $author,
-				'data-repo'  => $repo,
-				"data-$type" => $id,
-				'data-line' => $line,
-			),
-			$admin_label . $noscript
-		); # xss ok
-	}
+        return "<$tagname".implode(' ', $attribute_strings).">$content</$tagname>";
+    }
 
-	/**
-	 * create tag with attributes
-	 */
-	private static function create_tag( $tagname, $attributes, $content ) {
-		$tagname = esc_html( $tagname );
-		$attribute_strings = array( ''	 );
-		foreach ( $attributes as $key => $value ) {
-			if ( NULL !== $value ) {
-				$key = esc_attr( $key );
-				$value = esc_attr( $value );
-				if ( '' === $value ) {
-					array_push( $attribute_strings, $key );
-				} else {
-					array_push( $attribute_strings, "$key=\"$value\"" );
-				}
-			}
-		}
+    public static function get_noscript($url)
+    {
+        return '<noscript><a href="'.esc_url($url).'">'.esc_url($url).'</noscript>';
+    }
 
-		return "<$tagname" . implode( ' ', $attribute_strings ) . ">$content</$tagname>";
-	}
+    public static function get_editor_label()
+    {
+        return is_admin() ?
+            '<span class="travis-label-on-MCE">{{embeded build log}}</span>' :
+            '';
+    }
 
+    private static function is_positive_int($arg)
+    {
+        if (!is_numeric($arg)) {
+            return false;
+        } elseif (0 !== $arg - (int) $arg) {
+            return false;
+        } elseif (1 > $arg) {
+            return false;
+        }
+        {
+            return true;
+        }
+    }
 
+    public static function get_embed_failure()
+    {
+        return '<div class="oembed-travis-invalid"></div>';
+    }
 
-	public static function get_noscript( $url ) {
-		return '<noscript><a href="' . esc_url( $url ) . '">' . esc_url( $url ) . '</noscript>';
-	}
+    public function get_travis_url_regex()
+    {
+        return $this->regex;
+    }
 
-	public static function get_editor_label() {
-		return is_admin() ?
-			'<span class="travis-label-on-MCE">{{embeded build log}}</span>' :
-			'';
-	}
-
-
-	private static function is_positive_int( $arg ) {
-		if (! is_numeric( $arg ) ) {
-			return false;
-		} elseif ( 0 !== $arg - (int)$arg ) {
-			return false;
-		} elseif ( 1 > $arg ) {
-			return false;
-		} {
-			return true;
-		}
-	}
-
-
-	public static function get_embed_failure() {
-		return '<div class="oembed-travis-invalid"></div>';
-	}
-
-
-	public function get_travis_url_regex() {
-		return $this->regex;
-	}
-
-
-	private function get_shortcode_tag() {
-		return apply_filters( 'embed_travis_shortcode_tag', $this->shotcode_tag );
-	}
-
+    private function get_shortcode_tag()
+    {
+        return apply_filters('embed_travis_shortcode_tag', $this->shotcode_tag);
+    }
 }
 
 
